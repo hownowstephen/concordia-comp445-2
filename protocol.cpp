@@ -159,13 +159,12 @@ void put(SOCKET s, char * username, const char* filename){
             if((ibytesrecv = recv(s,szbuffer,BUFFER_SIZE,0)) == SOCKET_ERROR)
                 throw "Receive error in server program\n";
 
-            int count = 0;
+            int sent = 0;
             // Loop through the file and stream in chunks based on the buffer size
             while( !feof( send_file ) ){
-                fread( szbuffer, 1, BUFFER_SIZE, send_file );
-                if((ibytessent = send(s,szbuffer,sizeof(szbuffer),0))==SOCKET_ERROR)
-                    throw "error in file send";
-                memset(szbuffer,0,BUFFER_SIZE); // zero the buffer
+                sent = fread( szbuffer, 1, BUFFER_SIZE, send_file );
+                sendbuf(s,szbuffer);
+                cout << "Sent " << sent << " bytes" << endl;
             }
 
             fclose(send_file);
