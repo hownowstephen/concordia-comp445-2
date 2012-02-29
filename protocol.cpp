@@ -163,6 +163,10 @@ void put(SOCKET s, char * username, const char* filename){
             // Loop through the file and stream in chunks based on the buffer size
             while( !feof( send_file ) ){
                 sent = fread( szbuffer, 1, BUFFER_SIZE, send_file );
+                if( ferror( send_file ) )      {
+                    perror( "Read error" );
+                    break;
+                }
                 sendbuf(s,szbuffer);
                 cout << "Sent " << sent << " bytes" << endl;
             }
