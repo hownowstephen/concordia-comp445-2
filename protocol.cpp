@@ -44,12 +44,6 @@ int recvbuf(SOCKET sock, char* buffer, int buffer_size=BUFFER_SIZE){
 void get(SOCKET s, char * username, char * filename){
 
     char szbuffer[BUFFER_SIZE];
-    memset(szbuffer,0,BUFFER_SIZE);
-
-    char *buffer;
-    int ibufferlen=0;
-    int ibytessent;
-    int ibytesrecv=0;
 
     //host data types
     HOSTENT *hp;
@@ -63,13 +57,9 @@ void get(SOCKET s, char * username, char * filename){
 
     try {
         //wait for reception of server response.
-        ibytesrecv=0; 
-        if((ibytesrecv = recv(s,szbuffer,BUFFER_SIZE,0)) == SOCKET_ERROR)
-            throw "Receive failed\n";
-        
-        cout << "Server responded with " << szbuffer << endl;
+        recvbuf(s,szbuffer); // Get the response from the server
+        sscanf(szbuffer,"%s %d",response,&filesize);    // Extract file data
 
-        sscanf(szbuffer,"%s %d",response,&filesize);
         cout << "Response " << response << " filesize " << filesize << endl;
 
         // Ensure the response from the socket is OK
@@ -81,15 +71,9 @@ void get(SOCKET s, char * username, char * filename){
             // Send ack to start data transfer
             memset(szbuffer,0,BUFFER_SIZE);
             sprintf(szbuffer,"SEND");
-            ibufferlen = strlen(szbuffer);
+            sendbuf(s,szbuffer); // Send an ACK
 
-            if ((ibytessent = send(s,szbuffer,ibufferlen,0)) == SOCKET_ERROR)
-                throw "Send failed\n";  
-
-            // Intermediary buffer for formatting incoming data
-            char outdata[BUFFER_SIZE];
             int count = 0;
-
             // Read data from the server until we have received the file
             while(count < filesize){
                 recvbuf(s,szbuffer);
@@ -104,10 +88,7 @@ void get(SOCKET s, char * username, char * filename){
             // Clear the buffer and send an ack to the server to confirm receipt
             memset(szbuffer,0,BUFFER_SIZE);
             sprintf(szbuffer,"OK");
-            ibufferlen = strlen(szbuffer);
-
-            if ((ibytessent = send(s,szbuffer,ibufferlen,0)) == SOCKET_ERROR)
-                throw "Send failed\n";  
+            sendbuf(s,szbuffer);    // Send confirmation of receipt
         }else{
             // Make a note that the file does not exist
             cout << "Requested file does not exist" << endl;
@@ -115,13 +96,13 @@ void get(SOCKET s, char * username, char * filename){
     } catch(const char* str){
         cerr<<str<<WSAGetLastError()<<endl;
     }
+    free(szbuffer);
  }
 
 
 void put(SOCKET s, char * username, const char* filename){
 
     char szbuffer[BUFFER_SIZE];
-    memset(szbuffer,0,BUFFER_SIZE);
 
     char *buffer;
     int ibufferlen=0;
@@ -175,16 +156,13 @@ void put(SOCKET s, char * username, const char* filename){
 
             cout << "File does not exist, sending decline" << endl;
             // Send back a NO to the client to indicate that the file does not exist
-            memset(szbuffer,0,BUFFER_SIZE); // zero the buffer
             sprintf(szbuffer,"NO -1");
-            ibufferlen = strlen(szbuffer);
-
-            if((ibytessent = send(s,szbuffer,ibufferlen,0))==SOCKET_ERROR)
-                throw "error in send in server program\n";
+            sendbuf(s,szbuffer);
         }
     // Print out any errors
     } catch(const char* str){
         cerr<<str<<WSAGetLastError()<<endl;
     }
-    memset(szbuffer,0,BUFFER_SIZE); // zero the buffer
+
+    free(szbuffer);
  }
