@@ -19,7 +19,8 @@ using namespace std;
 
 int port = REQUEST_PORT; // Listening port
 SOCKET s;               // Global listening socket
-fd_set readfds;         // Socket multiplexor
+fd_set readfds;         // Socket multiplex
+int infds=1, outfds=0;
 
 void handle_client(){
     /* Client handler function, spawned by the main loop in response to a client connection */
@@ -57,8 +58,8 @@ void handle_client(){
         cout << "Client " << client_name << " requesting to " << direction << " file " << filename << endl;
 
         // Respond to the client request
-        if(!strcmp(direction,GET))      put(client_socket,"server",PUT,filename);
-        else if(!strcmp(direction,PUT)) get(client_socket,"server",GET,filename);
+        if(!strcmp(direction,GET))      put(client_socket,PUT,filename);
+        else if(!strcmp(direction,PUT)) get(client_socket,GET,filename);
         else                            throw "Requested protocol does not exist";
     
     // Catch any errors
@@ -67,7 +68,7 @@ void handle_client(){
     }
 
     //close Client socket
-    closesocket(s1);    
+    closesocket(client_socket);    
 }
 
 int main(void){
@@ -99,7 +100,7 @@ int main(void){
         cout<<"hostname: "<<localhost<< endl;
 
         // Ensure the local machine has an addressable name
-        if((hp=gethostbyname(localhost)) == NULL)   throw "gethostbyname() cannot get local host info" << endl; 
+        if((hp=gethostbyname(localhost)) == NULL)   throw "gethostbyname() cannot get local host info"; 
 
         //Create the UDP server socket
         if((s = socket(AF_INET,SOCK_STREAM,0))==INVALID_SOCKET)  throw "can't initialize socket";

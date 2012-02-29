@@ -26,7 +26,7 @@ int sendbuf(SOCKET sock, char* buffer,int buffer_size=BUFFER_SIZE){
     if ((ibytessent = send(sock,buffer,strlen(buffer),0)) == SOCKET_ERROR){ 
         throw "Send failed"; 
     }else{
-        memset(buffer,0,buffer_size)
+        memset(buffer,0,buffer_size);
         return ibytessent; 
     }   
 }
