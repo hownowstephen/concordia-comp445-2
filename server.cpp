@@ -122,6 +122,7 @@ int main(void){
         FD_ZERO(&readfds);
 
         while(1){   
+            Sleep(1);   // Sleep to allow for interrupts
             FD_SET(s,&readfds);  //always check the listener
             if((outfds=select(infds,&readfds,NULL,NULL,tp)) == SOCKET_ERROR) throw "failure in Select";
             else if (FD_ISSET(s,&readfds)){
