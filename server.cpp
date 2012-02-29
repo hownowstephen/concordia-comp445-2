@@ -6,7 +6,6 @@
 #include <winsock.h>
 #include <process.h>
 #include <iostream>
-#include <fstream>
 #include <time.h>
 #include <windows.h>
 #include <string.h>
@@ -43,22 +42,15 @@ void handle_client(){
         //Connection request accepted.
         cout<<"accepted connection from "<<inet_ntoa(ca.ca_in.sin_addr)<<":"<<hex<<htons(ca.ca_in.sin_port)<<endl;
 
-        memset(szbuffer,0,BUFFER_SIZE); // zero the buffer
+        // Receive header data from the client
+        recvbuf(client_socket,szbuffer);
 
-        //Fill in szbuffer from accepted request.
-        if((ibytesrecv = recv(client_socket,szbuffer,BUFFER_SIZE,0)) == SOCKET_ERROR)
-            throw "Error in client headers";
-
-        cout << "Received headers from client" << szbuffer << endl;
-
-        // Retrieve data about the user
-        char client_name[11];
-        char direction[3];
-        char filename[100];
-        sscanf(szbuffer,"%s %s %s",client_name,direction,filename);
+        // Extract data from the headers
+        char cusername[128], filename[128], direction[3];
+        sscanf(szbuffer,HEADER,cusername,direction,filename);
 
         // Print out the information
-        cout << "Client " << client_name << " requesting to " << direction << " file " << filename << endl;
+        cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
 
         // Respond to the client request
         if(!strcmp(direction,GET))      put(client_socket,PUT,filename);

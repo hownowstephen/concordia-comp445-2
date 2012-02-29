@@ -6,7 +6,6 @@
 #include <windows.h>
 #include <winsock.h>
 #include <string.h>
-#include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +19,7 @@ using namespace std;
 #define OK "OK"             // Expected response for successful transfers
 #define MISSING "NO"        // Expected response for failed transfers
 #define STKSIZE  16536      // Size of available stack to provide to threads
+#define HEADER "%s\t%s\t%s" // Format string for headers
 
 int sendbuf(SOCKET sock, char* buffer,int buffer_size=BUFFER_SIZE){
     int ibytessent = 0;
@@ -59,7 +59,7 @@ void get(SOCKET s, char * username, char * filename){
     // Parse response and filesize from server
     char response[2];
     int filesize;
-    ofstream output_file;
+    FILE *recv_file;
 
     try {
         //wait for reception of server response.
@@ -76,7 +76,7 @@ void get(SOCKET s, char * username, char * filename){
         if(!strcmp(response,OK)){
 
             // Open our local file for writing
-            output_file.open(filename);
+            recv_file = fopen(filename,'w');
 
             // Send ack to start data transfer
             memset(szbuffer,0,BUFFER_SIZE);
@@ -92,22 +92,14 @@ void get(SOCKET s, char * username, char * filename){
 
             // Read data from the server until we have received the file
             while(count < filesize){
-                if((ibytesrecv = recv(s,szbuffer,BUFFER_SIZE-1,0)) == SOCKET_ERROR)
-                    throw "Receive failed\n";
-
-                sprintf(outdata,"%s",szbuffer);
-                output_file.write(outdata,sizeof(outdata));
-
-                count += sizeof(outdata);
-
+                recvbuf(s,szbuffer);
+                fwrite(szbuffer,sizeof(szbuffer[0]), sizeof(szbuffer)/sizeof(szbuffer[0]), recv_file);
+                count += sizeof(szbuffer);
                 cout << "Received " << count << " bytes" << endl;
-                // Sanitize buffer
-                memset(szbuffer,0,BUFFER_SIZE);
-                memset(outdata,0,BUFFER_SIZE);
             }
 
             // Close our output file
-            output_file.close();
+            fclose(recv_file);
 
             // Clear the buffer and send an ack to the server to confirm receipt
             memset(szbuffer,0,BUFFER_SIZE);
@@ -141,21 +133,16 @@ void put(SOCKET s, char * username, char * filename){
 
     cout << "Sending file " << filename << endl;
 
-    ifstream filedata;
-    filebuf *pbuf;
+    FILE *send_file;
     int filesize;
 
     try {
 
-        // Open the file
-        filedata.open(filename);
-
-        if(filedata.is_open()){
-
-            // Get pointer to file buffer and determine file size
-            pbuf = filedata.rdbuf();
-            filesize = pbuf->pubseekoff(0,ios::end,ios::in);
-            pbuf->pubseekpos(0,ios::in);
+        if((send_file = fopen(filename,'r')) !== NULL){
+            // Determine the size of the file
+            fseek(fp, 0L, SEEK_END);
+            filesize = ftell(fp);
+            fseek(fp, 0L, SEEK_SET);
 
             cout << "File size: " << filesize << endl;
 
@@ -174,18 +161,14 @@ void put(SOCKET s, char * username, char * filename){
 
             int count = 0;
             // Loop through the file and stream in chunks based on the buffer size
-            while(!filedata.eof()){
-                filedata.read(szbuffer,BUFFER_SIZE-1);
-                ibufferlen = strlen(szbuffer);
-                count += ibufferlen;
-                cout << "Sent " << count << " bytes" << endl;
-                if((ibytessent = send(s,szbuffer,ibufferlen,0))==SOCKET_ERROR)
-                    throw "error in send in server program\n";
-
+            while( !feof( send_file ) ){
+                fread( szbuffer, sizeof( char ), sizeof(szbuffer), send_file );
+                if((ibytessent = send(s,szbuffer,sizeof(szbuffer),0))==SOCKET_ERROR)
+                    throw "error in file send";
                 memset(szbuffer,0,BUFFER_SIZE); // zero the buffer
             }
 
-            filedata.close();
+            fclose(send_file);
 
             if((ibytesrecv = recv(s,szbuffer,BUFFER_SIZE,0)) == SOCKET_ERROR)
                 throw "Receive error in server program\n";

@@ -6,7 +6,6 @@
 #include <windows.h>
 #include <winsock.h>
 #include <string.h>
-#include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,7 +99,7 @@ int main(void){
             GetUserName(cusername,&dwusername);
 
             // Send client headers
-            sprintf(szbuffer,"%s\t%s\t%s", cusername, direction, filename); 
+            sprintf(szbuffer,HEADER, cusername, direction, filename); 
             sendbuf(client_socket,szbuffer);
 
             // Perform a get request
