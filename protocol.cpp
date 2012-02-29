@@ -76,7 +76,7 @@ void get(SOCKET s, char * username, char * filename){
         if(!strcmp(response,OK)){
 
             // Open our local file for writing
-            recv_file = fopen(filename,'w');
+            recv_file = fopen(filename,"w");
 
             // Send ack to start data transfer
             memset(szbuffer,0,BUFFER_SIZE);
@@ -138,7 +138,7 @@ void put(SOCKET s, char * username, const char* filename){
 
     try {
 
-        if((send_file = fopen(filename,'r')) != NULL){
+        if((send_file = fopen(filename,"r")) != NULL){
             // Determine the size of the file
             fseek(send_file, 0L, SEEK_END);
             filesize = ftell(send_file);
