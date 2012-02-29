@@ -119,10 +119,8 @@ int main(void){
         cerr<<str<<endl;
     }
 
-    //close the client socket
-    closesocket(s);
-
-    /* When done uninstall winsock.dll (WSACleanup()) and exit */ 
+    //close the client socket and clean up
+    closesocket(client_socket);
     WSACleanup();  
     return 0;
 }
