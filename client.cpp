@@ -88,10 +88,10 @@ int main(void){
         cout << "Connecting to remote host:" << inet_ntoa(sa_in.sin_addr) << endl;
 
         //Connect Client to the server
-        if (connect(s,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR)    throw "connect failed\n";
+        if (connect(client_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR)    throw "connect failed\n";
 
-        prompt("Please enter a filename: ",&filename);              // Retrieve a filename from the client
-        prompt("Direction of transfer [get|put]: ",&direction);     // Retrieve a transfer direction
+        prompt("Please enter a filename: ",filename);              // Retrieve a filename from the client
+        prompt("Direction of transfer [get|put]: ",direction);     // Retrieve a transfer direction
 
         // Make sure the direction is one of get or put
         if(!strcmp(direction,GET) || !strcmp(direction,PUT)){ 
@@ -100,8 +100,8 @@ int main(void){
             GetUserName(cusername,&dwusername);
 
             // Send client headers
-            sprintf(szbuffer,"%s || %s || %s", cusername, direction, filename); 
-            sendbuf(client_socket,szbuffer)
+            sprintf(szbuffer,"%s\t%s\t%s", cusername, direction, filename); 
+            sendbuf(client_socket,szbuffer);
 
             // Perform a get request
             if(!strcmp(direction,GET)) get(client_socket,cusername,filename);
