@@ -146,18 +146,11 @@ void put(SOCKET s, char * username, const char* filename){
 
             cout << "File size: " << filesize << endl;
 
-            // Send back an OK message to confirm receipt
-            memset(szbuffer,0,BUFFER_SIZE); // zero the buffer
-            sprintf(szbuffer,"OK %d",filesize);
-            ibufferlen = strlen(szbuffer);
+            // Filesize headers
+            sprintf(szbuffer,"%s %d",OK,filesize);
 
-            if((ibytessent = send(s,szbuffer,ibufferlen,0))==SOCKET_ERROR)
-                throw "error in send in server program\n";
-
-            // Wait for confirmation 
-            memset(szbuffer,0,BUFFER_SIZE); // zero the buffer
-            if((ibytesrecv = recv(s,szbuffer,BUFFER_SIZE,0)) == SOCKET_ERROR)
-                throw "Receive error in server program\n";
+            sendbuf(s,szbuffer);    // Send the filesize
+            recvbuf(s,szbuffer);    // Wait for ack from client
 
             int sent = 0;
             // Loop through the file and stream in chunks based on the buffer size
@@ -166,6 +159,8 @@ void put(SOCKET s, char * username, const char* filename){
                 sendbuf(s,szbuffer);
                 cout << "Sent " << sent << " bytes" << endl;
             }
+
+            cout << "Finished sending file" << endl;
 
             fclose(send_file);
 
