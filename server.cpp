@@ -18,8 +18,8 @@ using namespace std;
 #include "protocol.cpp"
 
 int port = REQUEST_PORT; // Listening port
-SOCKET s;               // Global listening socket
-fd_set readfds;         // Socket multiplex
+SOCKET server_socket;    // Global listening socket
+fd_set readfds;          // Socket multiplex
 int infds=1, outfds=0;
 
 struct timeval timeout;             // Socket timeout struct
@@ -38,7 +38,7 @@ void handle_client(){
     try {
 
         //Found a connection request, try to accept. 
-        if((client_socket=accept(s,&ca.generic,&calen))==INVALID_SOCKET)   throw "Couldn't accept connection\n";
+        if((client_socket=accept(server_socket,&ca.generic,&calen))==INVALID_SOCKET)   throw "Couldn't accept connection\n";
 
         //Connection request accepted.
         cout<<"accepted connection from "<<inet_ntoa(ca.ca_in.sin_addr)<<":"<<hex<<htons(ca.ca_in.sin_port)<<endl;
@@ -106,7 +106,7 @@ int main(void){
         if((hp=gethostbyname(localhost)) == NULL)   throw "gethostbyname() cannot get local host info"; 
 
         //Create the UDP server socket
-        if((s = socket(AF_INET,SOCK_STREAM,0))==INVALID_SOCKET)  throw "can't initialize socket";
+        if((server_socket = socket(AF_INET,SOCK_STREAM,AF_NETBIOS))==INVALID_SOCKET)  throw "can't initialize socket";
 
         //Fill-in Server Port and Address info.
         sa.sin_family = AF_INET;
@@ -114,18 +114,18 @@ int main(void){
         sa.sin_addr.s_addr = htonl(INADDR_ANY);
 
         //Bind the server port
-        if (bind(s,(LPSOCKADDR)&sa,sizeof(sa)) == SOCKET_ERROR) throw "can't bind the socket";
+        if (bind(server_socket,(LPSOCKADDR)&sa,sizeof(sa)) == SOCKET_ERROR) throw "can't bind the socket";
 
         //Successfull bind, now listen for client requests.
-        if(listen(s,10) == SOCKET_ERROR)    throw "couldn't  set up listen on socket";
+        if(listen(server_socket,10) == SOCKET_ERROR)    throw "couldn't  set up listen on socket";
 
         FD_ZERO(&readfds);
 
         while(1){   
             Sleep(1);   // Sleep to allow for interrupts
-            FD_SET(s,&readfds);  //always check the listener
+            FD_SET(server_socket,&readfds);  //always check the listener
             if((outfds=select(infds,&readfds,NULL,NULL,tp)) == SOCKET_ERROR) throw "failure in Select";
-            else if (FD_ISSET(s,&readfds)){
+            else if (FD_ISSET(server_socket,&readfds)){
                 // Received a new connection request, spawn a subthread with handle_client to respond
                 int args = 0;
                 if(( result = _beginthread((void (*)(void *))handle_client, STKSIZE, (void *) args))>=0)
@@ -138,7 +138,7 @@ int main(void){
     }
 
     //close server socket and clean up the winsock
-    closesocket(s);
+    closesocket(server_socket);
     WSACleanup();
     return 0;
 }

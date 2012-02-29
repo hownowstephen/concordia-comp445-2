@@ -96,9 +96,9 @@ void get(SOCKET s, char * username, char * filename){
                     throw "Receive failed\n";
 
                 sprintf(outdata,"%s",szbuffer);
-                output_file.write(outdata,strlen(outdata));
+                output_file.write(outdata,sizeof(outdata));
 
-                count += strlen(outdata);
+                count += sizeof(outdata);
 
                 cout << "Received " << count << " bytes" << endl;
                 // Sanitize buffer
