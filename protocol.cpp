@@ -33,7 +33,7 @@ int sendbuf(SOCKET sock, char* buffer,int buffer_size=BUFFER_SIZE){
 
 int recvbuf(SOCKET sock, char* buffer, int buffer_size=BUFFER_SIZE){
     int ibytesrecv = 0;
-    memset(szbuffer,0,buffer_size); // Clear the buffer to prepare to receive data
+    memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
     if((ibytesrecv = recv(sock,buffer,buffer_size,0)) == SOCKET_ERROR){
         throw "Recv failed";
     }else{

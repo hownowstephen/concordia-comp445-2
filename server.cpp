@@ -22,6 +22,9 @@ SOCKET s;               // Global listening socket
 fd_set readfds;         // Socket multiplex
 int infds=1, outfds=0;
 
+struct timeval timeout;             // Socket timeout struct
+const struct timeval *tp=&timeout;
+
 void handle_client(){
     /* Client handler function, spawned by the main loop in response to a client connection */
 
