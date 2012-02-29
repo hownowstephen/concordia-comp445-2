@@ -120,8 +120,7 @@ int main(void){
             else if (FD_ISSET(server_socket,&readfds)){
                 // Received a new connection request, spawn a subthread with handle_client to respond
                 int args = 0;
-                if(( result = _beginthread((void (*)(void *))handle_client, STKSIZE, (void *) args))>=0)
-                    cout << "Preparing to establish a new connection" << endl; 
+                result = _beginthread((void (*)(void *))handle_client, STKSIZE, (void *) args);
             }
         }
     // Catch and print any errors
