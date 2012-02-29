@@ -106,7 +106,7 @@ int main(void){
         if((hp=gethostbyname(localhost)) == NULL)   throw "gethostbyname() cannot get local host info"; 
 
         //Create the UDP server socket
-        if((server_socket = socket(AF_INET,SOCK_STREAM,AF_NETBIOS))==INVALID_SOCKET)  throw "can't initialize socket";
+        if((server_socket = socket(AF_INET,SOCK_STREAM,0))==INVALID_SOCKET)  throw "can't initialize socket";
 
         //Fill-in Server Port and Address info.
         sa.sin_family = AF_INET;
