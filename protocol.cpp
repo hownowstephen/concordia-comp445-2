@@ -118,7 +118,7 @@ void get(SOCKET s, char * username, char * filename){
  }
 
 
-void put(SOCKET s, char * username, char * filename){
+void put(SOCKET s, char * username, const char* filename){
 
     char szbuffer[BUFFER_SIZE];
     memset(szbuffer,0,BUFFER_SIZE);
@@ -138,11 +138,11 @@ void put(SOCKET s, char * username, char * filename){
 
     try {
 
-        if((send_file = fopen(filename,'r')) !== NULL){
+        if((send_file = fopen(filename,'r')) != NULL){
             // Determine the size of the file
-            fseek(fp, 0L, SEEK_END);
-            filesize = ftell(fp);
-            fseek(fp, 0L, SEEK_SET);
+            fseek(send_file, 0L, SEEK_END);
+            filesize = ftell(send_file);
+            fseek(send_file, 0L, SEEK_SET);
 
             cout << "File size: " << filesize << endl;
 
