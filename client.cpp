@@ -100,12 +100,8 @@ int main(void){
             GetUserName(cusername,&dwusername);
 
             // Send client headers
-            sprintf(szbuffer,"%s", cusername); 
+            sprintf(szbuffer,"%s || %s || %s", cusername, direction, filename); 
             sendbuf(client_socket,szbuffer)
-            
-            // Send headers to the server
-            if ((ibytessent = send(client_socket,szbuffer,strlen(szbuffer),0)) == SOCKET_ERROR) throw "Send failed\n";  
-            memset(szbuffer,0,BUFFER_SIZE); // zero the buffer
 
             // Perform a get request
             if(!strcmp(direction,GET)) get(client_socket,cusername,filename);

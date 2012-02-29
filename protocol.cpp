@@ -23,7 +23,7 @@ using namespace std;
 
 int sendbuf(SOCKET sock, char* buffer,int buffer_size=BUFFER_SIZE){
     int ibytessent = 0;
-    if ((ibytessent = send(sock,buffer,strlen(buffer),0)) == SOCKET_ERROR)   
+    if ((ibytessent = send(sock,buffer,strlen(buffer),0)) == SOCKET_ERROR){ 
         throw "Send failed"; 
     }else{
         memset(buffer,0,buffer_size)
