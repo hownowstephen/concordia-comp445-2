@@ -40,7 +40,7 @@ void handle_client(){
         if((client_socket=accept(server_socket,&ca.generic,&calen))==INVALID_SOCKET)   throw "Couldn't accept connection\n";
 
         //Connection request accepted.
-        cout<<"accepted connection from "<<inet_ntoa(ca.ca_in.sin_addr)<<":"<<hex<<htons(ca.ca_in.sin_port)<<endl;
+        cout<<"accepted connection from "<<inet_ntoa(ca.ca_in.sin_addr)<<":"<<htons(ca.ca_in.sin_port)<<endl;
 
         // Receive header data from the client
         recvbuf(client_socket,szbuffer);
@@ -119,7 +119,7 @@ int main(void){
             if((outfds=select(infds,&readfds,NULL,NULL,tp)) == SOCKET_ERROR) throw "failure in Select";
             else if (FD_ISSET(server_socket,&readfds)){
                 // Received a new connection request, spawn a subthread with handle_client to respond
-                int args = 0;
+                int args = 0;6
                 result = _beginthread((void (*)(void *))handle_client, STKSIZE, (void *) args);
             }
         }
