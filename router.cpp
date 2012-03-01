@@ -1,4 +1,3 @@
-
 //Router.cpp
 #include "Router.h"
 //////////////////////////////////////////////////////////
@@ -254,4 +253,69 @@ void Router::Run()
                 }
             }
         } //end of try
-        catch(char *str) {cerr<
+        catch(char *str) {cerr<<str<<":"<<dec<<WSAGetLastError()<<endl;}
+    }//end of while
+}
+
+//////////////////////////////////////////////////////////
+//
+//  Router::SendProc
+//      Send delayed packets to the destinations.
+//
+//////////////////////////////////////////////////////////
+
+void Router::SendProc()
+{
+    try
+    {
+        if(FileBuf.destination==1)
+        {
+            if(sendto(Sock1, FileBuf.Buffer, FileBuf.len,0,(SOCKADDR*)&sa_in_peer1,sizeof(sa_in_peer1))==SOCKET_ERROR)
+                throw "Send packet error!";
+        }
+        else
+        {
+            if(sendto(Sock2, FileBuf.Buffer, FileBuf.len,0,(SOCKADDR*)&sa_in_peer2,sizeof(sa_in_peer2))==SOCKET_ERROR)
+                throw "Send packet error!";
+        }
+        if (TRACE)
+        {
+            fout<<"Router: Send delayed packet "<<FileBuf.count<<" received from peer host "<<(FileBuf.destination==1?2:1)<<" to host "<<FileBuf.destination<<endl;
+            cout<<"Router: Send delayed packet "<<FileBuf.count<<" received from peer host "<<(FileBuf.destination==1?2:1)<<" to host "<<FileBuf.destination<<endl;
+        }
+    }
+    catch(char *str){cerr<<str<<":"<<dec<<WSAGetLastError()<<endl;}
+    FileBuf.empty=true;
+}
+
+//////////////////////////////////////////////////////////
+//
+//  Router Destructor
+//  arguements:
+//      fn: A string of log file name
+//
+//////////////////////////////////////////////////////////
+
+Router :: ~Router()
+{
+    closesocket(Sock1);
+    closesocket(Sock2);
+
+    /* When done, uninstall winsock.dll (WSACleanup()) and exit */ 
+    WSACleanup();  
+
+    //close log file
+    fout.close();
+}
+
+//////////////////////////////////////////////////////////
+//
+//  Main function
+//
+//////////////////////////////////////////////////////////
+
+void main()
+{
+    Router router;
+    router.Run();
+}
