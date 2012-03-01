@@ -66,7 +66,7 @@ void get(SOCKET s, char * username, char * filename){
         if(!strcmp(response,OK)){
 
             // Open our local file for writing
-            recv_file = fopen(filename,"w");
+            recv_file = fopen(filename,"wb");
 
             // Send ack to start data transfer
             memset(szbuffer,0,BUFFER_SIZE);
@@ -122,7 +122,7 @@ void put(SOCKET s, char * username, const char* filename){
 
     try {
 
-        if((send_file = fopen(filename,"r")) != NULL){
+        if((send_file = fopen(filename,"rb")) != NULL){
             // Determine the size of the file
             fseek(send_file, 0L, SEEK_END);
             filesize = ftell(send_file);
@@ -138,7 +138,7 @@ void put(SOCKET s, char * username, const char* filename){
 
             int size = 0, sent = 0;
             // Loop through the file and stream in chunks based on the buffer size
-            while ((fgets(szbuffer,sizeof(szbuffer),send_file)) != NULL){
+            while ((fread(szbuffer,sizeof(szbuffer),send_file)) != NULL){
                 sendbuf(s,szbuffer);
                 cout << "Sent " << sizeof(szbuffer) << "bytes" << endl;
             }
