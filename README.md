@@ -7,10 +7,10 @@ The application is a routed FTP client/server application over UDP/winsock
 
 Included are the following files:
 
-client.cpp - The FTP client
-server.cpp - The FTP server
-protocol.cpp - A custom file transfer protocol library
-Makefile - The makefile, optimized for MinGW/GNU
+* client.cpp - The FTP client
+* server.cpp - The FTP server
+* protocol.cpp - A custom file transfer protocol library
+* Makefile - The makefile, optimized for MinGW/GNU
 
 as well as the necessary router.h, router.cpp - Packet-dropping router application
 
