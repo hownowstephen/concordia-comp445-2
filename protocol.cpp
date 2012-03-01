@@ -84,6 +84,8 @@ void get(SOCKET s, char * username, char * filename){
                 cout << "Received " << count << " of " << filesize << " bytes" << endl;
             }
 
+            cout << "Finished receiving data" << endl;
+
             // Close our output file
             fclose(recv_file);
 
