@@ -73,11 +73,13 @@ void get(SOCKET s, char * username, char * filename){
             sprintf(szbuffer,"SEND");
             sendbuf(s,szbuffer); // Send an ACK
 
-            int count = 0;
+            int size = 0, count = 0;
             // Read data from the server until we have received the file
             while(count < filesize){
                 recvbuf(s,szbuffer);
-                fwrite(szbuffer,1, sizeof(szbuffer), recv_file);
+                if(filesize - count >= BUFFER_SIZE) size = sizeof(szbuffer); // Read a full buffer
+                else                               size = filesize - count;  // Read a shorter buffer
+                fwrite(szbuffer,1, size, recv_file);
                 count += sizeof(szbuffer);
                 cout << "Received " << count << " of " << filesize << " bytes" << endl;
             }
@@ -96,7 +98,6 @@ void get(SOCKET s, char * username, char * filename){
     } catch(const char* str){
         cerr<<str<<WSAGetLastError()<<endl;
     }
-    free(szbuffer);
  }
 
 
@@ -163,6 +164,4 @@ void put(SOCKET s, char * username, const char* filename){
     } catch(const char* str){
         cerr<<str<<WSAGetLastError()<<endl;
     }
-
-    free(szbuffer);
  }
