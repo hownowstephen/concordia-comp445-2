@@ -76,9 +76,10 @@ void get(SOCKET s, char * username, char * filename){
             int size = 0, count = 0;
             // Read data from the server until we have received the file
             while(count < filesize){
+                if(filesize - count >= BUFFER_SIZE) size = sizeof(szbuffer) / sizeof(char); // Read a full buffer
+                else                                size = (filesize - count) / sizeof(char);  // Read a shorter buffer
+                cout << "Receiving bytes..." << endl;
                 recvbuf(s,szbuffer);
-                if(filesize - count >= BUFFER_SIZE) size = sizeof(szbuffer); // Read a full buffer
-                else                                size = filesize - count;  // Read a shorter buffer
                 fwrite(szbuffer,sizeof(char),size,recv_file);
                 count += sizeof(szbuffer);
                 cout << "Received " << count << " of " << filesize << " bytes" << endl;
