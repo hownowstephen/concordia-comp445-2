@@ -314,8 +314,9 @@ Router :: ~Router()
 //
 //////////////////////////////////////////////////////////
 
-void main()
+int main()
 {
     Router router;
     router.Run();
+    return 0;
 }
