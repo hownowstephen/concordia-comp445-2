@@ -30,9 +30,6 @@ Router::Router(char *fn)        //Constructor
     gethostname(localhost,MAXHOSTNAMELEN);
     cout<<"Router starting on host:"<<localhost<<endl<<flush;
 
-    //Open the log file
-    fout.open(fn);
-
     try
     {
         //Create the Udp Sock1
@@ -159,7 +156,6 @@ void Router::Run()
                         throw " Get buffer error!";
                     if (TRACE)
                     {
-                        fout<<"Router: Receive packet "<<count1<<" from peer host 1"<<endl;
                         cout<<"Router: Receive packet "<<count1<<" from peer host 1"<<endl;
                     }
                     temp.count=count1;
@@ -172,7 +168,6 @@ void Router::Run()
                         throw " Get buffer error!";
                     if (TRACE)
                     {
-                        fout<<"Router: Receive packet "<<count2<<" from peer host 2"<<endl;
                         cout<<"Router: Receive packet "<<count2<<" from peer host 2"<<endl;
                     }
                     temp.count=count2;
@@ -293,8 +288,6 @@ Router :: ~Router()
     /* When done, uninstall winsock.dll (WSACleanup()) and exit */ 
     WSACleanup();  
 
-    //close log file
-    fout.close();
 }
 
 //////////////////////////////////////////////////////////
