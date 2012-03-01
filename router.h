@@ -3,12 +3,12 @@
 #ifndef ROUTER_H
 #define ROUTER_H
 
-#include <winsock.h>
-#include <fstream.h>
-#include <iostream.h>
-#include <time.h>
+#include <winsock>
+#include <fstream>
+#include <iostream>
+#include <time>
 #include <list>
-#include <stdio.h>
+#include <stdio>
 
 using namespace std ;
 
