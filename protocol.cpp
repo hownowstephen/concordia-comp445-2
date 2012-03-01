@@ -78,8 +78,8 @@ void get(SOCKET s, char * username, char * filename){
             while(count < filesize){
                 recvbuf(s,szbuffer);
                 if(filesize - count >= BUFFER_SIZE) size = sizeof(szbuffer); // Read a full buffer
-                else                               size = filesize - count;  // Read a shorter buffer
-                fwrite(szbuffer,1, size, recv_file);
+                else                                size = filesize - count;  // Read a shorter buffer
+                fwrite(szbuffer,sizeof(char),size,recv_file);
                 count += sizeof(szbuffer);
                 cout << "Received " << count << " of " << filesize << " bytes" << endl;
             }
@@ -134,10 +134,12 @@ void put(SOCKET s, char * username, const char* filename){
             sendbuf(s,szbuffer);    // Send the filesize
             recvbuf(s,szbuffer);    // Wait for ack from client
 
-            int sent = 0;
+            int size = 0, sent = 0;
             // Loop through the file and stream in chunks based on the buffer size
-            while( !feof( send_file ) ){
-                sent = fread( szbuffer, 1, BUFFER_SIZE, send_file );
+            while( sent < filesize){
+                if(filesize - sent > BUFFER_SIZE)   size = BUFFER_SIZE;
+                else                                size = filesize - sent;
+                sent += fread( szbuffer, sizeof(char), size, send_file );
                 sendbuf(s,szbuffer);
                 cout << "Sent " << sent << " bytes" << endl;
             }
