@@ -44,7 +44,6 @@ public:
     void Run();
 
 private:
-    class ofstream fout;            //log file
     float damage_rate, delay_rate;              //damage rate: dropped and delayed
     SOCKET Sock1, Sock2;            //sockets used for communcation with peer host 1 and 2
     EVENT_LIST FileBuf;     //buffer for delayed packets
