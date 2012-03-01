@@ -75,7 +75,7 @@ int main(void){
         if((rp=gethostbyname(remotehost)) == NULL)  throw "Remote gethostbyname failed\n";
 
         //Create the socket
-        if((client_socket = socket(AF_INET,SOCK_STREAM,0))==INVALID_SOCKET)  throw "Socket failed\n";
+        if((client_socket = socket(AF_INET,SOCK_DGRAM,0))==INVALID_SOCKET)  throw "Socket failed\n";
 
         //Specify server address for client to connect to server.
         memset(&sa_in,0,sizeof(sa_in));

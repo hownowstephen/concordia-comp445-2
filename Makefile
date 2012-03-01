@@ -4,13 +4,15 @@ CPP  = g++.exe
 CC   = gcc.exe
 LINKCLI = client.o
 LINKSRV  = server.o
+LINKRT = router.o
 OBJ = $(LINKCLI) $(LINKSRV) protocol.o
 LIBS = -lwsock32
 BINSRV = server
 BINCLI = client
+BINRT = router
 RM = rm -f
 
-all: server client
+all: server client router
 
 clean:
 	${RM} $(OBJ) $(BINSRV) $(BINCLI)
@@ -21,6 +23,9 @@ server: server.o protocol.o
 client: client.o protocol.o
 	$(CPP) $(LINKCLI) -o $(BINCLI) $(LIBS)
 
+router: router.o
+	$(CPP) $(LINKRT) -o $(BINRT) $(LIBS)
+
 client.o: client.cpp
 	$(CPP) -c client.cpp -o $(LINKCLI) $(LIBS)
 
@@ -29,3 +34,6 @@ server.o: server.cpp
 
 protocol.o: protocol.cpp
 	$(CPP) -c protocol.cpp -o protocol.o $(LIBS)
+
+router.o: router.cpp
+	$(CPP) -c router.cpp -o router.o $(LIBS)
