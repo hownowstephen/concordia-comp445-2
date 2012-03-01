@@ -78,7 +78,6 @@ void get(SOCKET s, char * username, char * filename){
             while(count < filesize){
                 if(filesize - count >= BUFFER_SIZE) size = sizeof(szbuffer) / sizeof(char); // Read a full buffer
                 else                                size = (filesize - count) / sizeof(char);  // Read a shorter buffer
-                cout << "Receiving bytes..." << endl;
                 recvbuf(s,szbuffer);
                 fwrite(szbuffer,sizeof(char),size,recv_file);
                 count += sizeof(szbuffer);
@@ -94,6 +93,8 @@ void get(SOCKET s, char * username, char * filename){
             memset(szbuffer,0,BUFFER_SIZE);
             sprintf(szbuffer,"OK");
             sendbuf(s,szbuffer);    // Send confirmation of receipt
+
+            cout << "Completed transfer of " << filename << endl;
         }else{
             // Make a note that the file does not exist
             cout << "Requested file does not exist" << endl;
@@ -141,20 +142,14 @@ void put(SOCKET s, char * username, const char* filename){
             // Loop through the file and stream in chunks based on the buffer size
             while ( !feof(send_file) ){
                 fread(szbuffer,1,BUFFER_SIZE,send_file);
-                cout << "Sending " << sizeof(szbuffer) << "bytes" << endl;
+                cout << "Sending " << sizeof(szbuffer) << " bytes" << endl;
                 sendbuf(s,szbuffer);
             }
 
-            cout << "Finished sending file" << endl;
-
             fclose(send_file);
+            recvbuf(s,szbuffer); // Receive the ack from the client
 
-            if((ibytesrecv = recv(s,szbuffer,BUFFER_SIZE,0)) == SOCKET_ERROR)
-                throw "Receive error in server program\n";
-
-            if(!strcmp(szbuffer,OK)){
-                cout << "File transfer completed" << endl;
-            }
+            if(!strcmp(szbuffer,OK))    cout << "File transfer completed" << endl;
 
         }else{
 
