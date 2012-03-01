@@ -86,12 +86,6 @@ Router::Router(char *fn)        //Constructor
         sa_in_peer2.sin_family = hp->h_addrtype;   
         sa_in_peer2.sin_port = htons(PEER_PORT2);
 
-        if (TRACE)
-        {
-            fout<<"Peer host 1: "<<peer_name1<<endl;
-            fout<<"Peer host 2: "<<peer_name2<<endl;
-            fout<<"Damage Rate: "<<damage_rate<<endl;
-        }
     }       
     catch (char *str) {cerr<<str<<":"<<dec<<WSAGetLastError()<<endl; exit(1);}
 
@@ -194,7 +188,6 @@ void Router::Run()
                     FileBuf.empty=false;
                     if (TRACE)
                     {
-                        fout<<"Router: Packet "<<temp.count<<" received from peer host "<<(temp.destination==1?2:1)<<" has been delayed!"<<endl;
                         cout<<"Router: Packet "<<temp.count<<" received from peer host "<<(temp.destination==1?2:1)<<" has been delayed!"<<endl;
                     }
                 }
@@ -202,7 +195,6 @@ void Router::Run()
                 {
                     if (TRACE)
                     {
-                        fout<<"Router: Packet "<<temp.count<<" received from peer host "<<(temp.destination==1?2:1)<<" has been dropped by router!"<<endl;
                         cout<<"Router: Packet "<<temp.count<<" received from peer host "<<(temp.destination==1?2:1)<<" has been dropped by router!"<<endl;
                     }
                 }
@@ -214,7 +206,6 @@ void Router::Run()
                             throw "Send packet error!";
                         if (TRACE)
                         {
-                            fout<<"Router: Send packet "<<temp.count<<" received from peer host "<<(temp.destination==1?2:1) <<" to host "<<temp.destination<<endl;
                             cout<<"Router: Send packet "<<temp.count<<" received from peer host "<<(temp.destination==1?2:1) <<" to host "<<temp.destination<<endl;
                         }
                         if(!FileBuf.empty&&FileBuf.destination==1)
@@ -229,7 +220,6 @@ void Router::Run()
                             throw "Send packet error1";
                         if (TRACE)
                         {
-                            fout<<"Router: Send packet "<<temp.count<<" received from peer host "<<(temp.destination==1?2:1) <<" to host "<<temp.destination<<endl;
                             cout<<"Router: Send packet "<<temp.count<<" received from peer host "<<(temp.destination==1?2:1) <<" to host "<<temp.destination<<endl;
                         }
                         if(!FileBuf.empty&&FileBuf.destination==2)
@@ -280,7 +270,6 @@ void Router::SendProc()
         }
         if (TRACE)
         {
-            fout<<"Router: Send delayed packet "<<FileBuf.count<<" received from peer host "<<(FileBuf.destination==1?2:1)<<" to host "<<FileBuf.destination<<endl;
             cout<<"Router: Send delayed packet "<<FileBuf.count<<" received from peer host "<<(FileBuf.destination==1?2:1)<<" to host "<<FileBuf.destination<<endl;
         }
     }
