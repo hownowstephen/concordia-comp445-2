@@ -12,10 +12,13 @@ BINCLI = client
 BINRT = router
 RM = rm -f
 
-all: server client router
+all: refresh server client router
 
 clean:
 	${RM} $(OBJ) $(BINSRV) $(BINCLI)
+
+refresh:
+	git pull origin master
 
 server: server.o protocol.o
 	$(CPP) $(LINKSRV) -o $(BINSRV) $(LIBS)
