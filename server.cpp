@@ -84,6 +84,9 @@ int main(void){
         // Connect to the router (or exit if it is not online)
         if (connect(server_socket,(LPSOCKADDR)&sa_out,sizeof(sa_out)) == SOCKET_ERROR) throw "connecting to the router failed";
 
+        //Display the host machine internet address
+        cout << "Connected to remote host: " << inet_ntoa(sa_out.sin_addr) << ":" << ROUTER_PORT1 << endl;
+
         // Server will block waiting for new client requests indefinitely
         while(1) {
 

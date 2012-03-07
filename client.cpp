@@ -84,11 +84,11 @@ int main(void){
         sa_out.sin_family = rp->h_addrtype;   
         sa_out.sin_port = htons(ROUTER_PORT2);
 
-        //Display the host machine internet address
-        cout << "Connecting to remote host:" << inet_ntoa(sa_out.sin_addr) << ":" << ROUTER_PORT2 << endl;
-
         //Connect Client to the server
         if (connect(client_socket,(LPSOCKADDR)&sa_out,sizeof(sa_out)) == SOCKET_ERROR)    throw "connect failed\n";
+
+        //Display the host machine internet address
+        cout << "Connected to remote host: " << inet_ntoa(sa_out.sin_addr) << ":" << ROUTER_PORT2 << endl;
 
         prompt("Please enter a filename: ",filename);              // Retrieve a filename from the client
         prompt("Direction of transfer [get|put]: ",direction);     // Retrieve a transfer direction
@@ -116,7 +116,7 @@ int main(void){
 
     //Display any needed error response.
     catch (const char *str) { 
-        cerr<<str<<endl;
+        cerr <<str<<endl;
     }
 
     //close the client socket and clean up
