@@ -79,7 +79,11 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
         }else{
             if ((ibytessent = sendto(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                 throw "Send failed"; 
-            return ibytesrecv;  // Return the amount of data received
+            }else{
+                // TODO: Figure out what to do after the send on the recvbuf side
+                cout << "Sent ack successfully" << endl;
+                return ibytesrecv;  // Return the amount of data received
+            }
         }
     }
     
