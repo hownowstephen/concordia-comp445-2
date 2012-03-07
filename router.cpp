@@ -84,7 +84,7 @@ Router::Router(char *fn)        //Constructor
         sa_in_peer2.sin_port = htons(PEER_PORT2);
 
     }       
-    catch (char *str) {cerr<<str<<":"<<dec<<WSAGetLastError()<<endl; exit(1);}
+    catch (const char *str) {cerr<<str<<":"<<dec<<WSAGetLastError()<<endl; exit(1);}
 
     srand( (unsigned)time( NULL ) );
 }
@@ -238,7 +238,7 @@ void Router::Run()
                 }
             }
         } //end of try
-        catch(char *str) {cerr<<str<<":"<<dec<<WSAGetLastError()<<endl;}
+        catch(const char *str) {cerr<<str<<":"<<dec<<WSAGetLastError()<<endl;}
     }//end of while
 }
 
@@ -268,7 +268,7 @@ void Router::SendProc()
             cout<<"Router: Send delayed packet "<<FileBuf.count<<" received from peer host "<<(FileBuf.destination==1?2:1)<<" to host "<<FileBuf.destination<<endl;
         }
     }
-    catch(char *str){cerr<<str<<":"<<dec<<WSAGetLastError()<<endl;}
+    catch(const char *str){cerr<<str<<":"<<dec<<WSAGetLastError()<<endl;}
     FileBuf.empty=true;
 }
 
