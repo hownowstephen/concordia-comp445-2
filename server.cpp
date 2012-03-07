@@ -90,8 +90,6 @@ int main(void){
         // Server will block waiting for new client requests indefinitely
         while(1) {
 
-            Sleep(1); // Sleep between requests
-
             // Receive header data from the client
             recvbuf(server_socket,sa_out,szbuffer);
 
