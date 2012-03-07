@@ -111,6 +111,7 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
     FILE *recv_file;
 
     try {
+        cout << "Waiting for file headers" << endl;
         //wait for reception of server response.
         recvbuf(s,sa,szbuffer); // Get the response from the server
         sscanf(szbuffer,"%s %d",response,&filesize);    // Extract file data
