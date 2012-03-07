@@ -22,26 +22,67 @@ using namespace std;
 #define OK "OK"             // Expected response for successful transfers
 #define MISSING "NO"        // Expected response for failed transfers
 #define HEADER "%s\t%s\t%s" // Format string for headers
+#define TIMEOUT_USEC 300000 //time-out value
 
 int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZE){
-    int ibytessent = 0;
+    int ibytessent = 0;             // Number of bytes sent
+    int result;                     // Result of select call
+    fd_set readfds;                 // Used by select to manage file descriptor multiplexing
+    struct timeval *tp=new timeval; // Timeout struct
+    tp->tv_sec=0;                   // Set current time
+    tp->tv_usec=TIMEOUT_USEC;       // Set timeout time
+    char* control_buffer;           // Control flow buffer, used to store the ACK result
+    int from = sizeof(sa);          // Size of the sockaddr
+
     if ((ibytessent = sendto(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
         throw "Send failed"; 
     }else{
+
+        FD_ZERO(&readfds);
+        FD_SET(sock,&readfds);
+
+        // TODO: if anything fails, re-run sendbuf
+        if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
+            throw "Timer error!";
+        }else if(result > 0){
+            if((recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
+                throw "Ack recv failed";
+            }else{
+                // TODO: Verify the sequence number of this request
+                cout << "Finished negotiating a packet" << endl;
+            }
+        }
         memset(buffer,0,buffer_size);
         return ibytessent; 
     }   
 }
 
 int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SIZE){
-    int ibytesrecv = 0;
-    int from = sizeof(sa);
-    memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
-    if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
-        throw "Recv failed";
+    int ibytessent = 0;             // Number of bytes sent
+    int result;                     // Result of select call
+    fd_set readfds;                 // Used by select to manage file descriptor multiplexing
+    struct timeval *tp=new timeval; // Timeout struct
+    tp->tv_sec=0;                   // Set current time
+    tp->tv_usec=TIMEOUT_USEC;       // Set timeout time
+    char* control_buffer;           // Control flow buffer, used to store the ACK result
+    int from = sizeof(sa);          // Size of the sockaddr
+
+    FD_ZERO(&readfds);
+    FD_SET(sock,&readfds);
+
+    if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
+        throw "Timer error!";
     }else{
-        return ibytesrecv;  // Return the amount of data received
+        memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
+        if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
+            throw "Recv failed";
+        }else{
+            if ((ibytessent = sendto(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
+                throw "Send failed"; 
+            return ibytesrecv;  // Return the amount of data received
+        }
     }
+    
 }
 
 void prompt(char* message, char*buffer){
