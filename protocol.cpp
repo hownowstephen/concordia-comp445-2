@@ -35,8 +35,9 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZ
 
 int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SIZE){
     int ibytesrecv = 0;
+    int from = sizeof(sa);
     memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
-    if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &sizeof(sa))) == SOCKET_ERROR){
+    if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
         throw "Recv failed";
     }else{
         return ibytesrecv;  // Return the amount of data received
