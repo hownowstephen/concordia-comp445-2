@@ -31,8 +31,7 @@ int main(void){
     int result;                 // Retains result of spawning a thread
     char localhost[11];         // Store the value of localhost
     HOSTENT *hp;                // Host entity
-    SOCKADDR_IN sa;             // filled by bind
-    SOCKADDR_IN sa1;            // fill with server info, IP, port
+    SOCKADDR_IN sa;             // fill with server info, IP, port
     char szbuffer[BUFFER_SIZE]; // buffer object
      
     try {
@@ -64,14 +63,8 @@ int main(void){
         sa.sin_port = htons(port);
         sa.sin_addr.s_addr = htonl(INADDR_ANY);
 
-        //Bind the server port
-        if (bind(server_socket,(LPSOCKADDR)&sa,sizeof(sa)) == SOCKET_ERROR) throw "can't bind the socket";
-
-        //Successfull bind, now listen for client requests.
-        if(listen(server_socket,10) == SOCKET_ERROR)    throw "couldn't  set up listen on socket";
-
         // Connect to the router (or exit if it is not online)
-        if (connect(server_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR) throw "connecting to the router failed";
+        if (connect(server_socket,(LPSOCKADDR)&sa,sizeof(sa)) == SOCKET_ERROR) throw "connecting to the router failed";
 
         // Server will block waiting for new client requests indefinitely
         while(1) {
