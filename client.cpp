@@ -101,12 +101,12 @@ int main(void){
 
             // Send client headers
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
-            sendbuf(client_socket,szbuffer);
+            sendbuf(client_socket,sa_out,szbuffer);
 
             // Perform a get request
-            if(!strcmp(direction,GET)) get(client_socket,cusername,filename);
+            if(!strcmp(direction,GET)) get(client_socket,sa_out,cusername,filename);
             // Perform a put request
-            else if(!strcmp(direction,PUT)) put(client_socket,cusername,filename);
+            else if(!strcmp(direction,PUT)) put(client_socket,sa_out,cusername,filename);
 
         }else{
             throw "this protocol only supports get or put";

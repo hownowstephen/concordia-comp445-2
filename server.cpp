@@ -93,7 +93,7 @@ int main(void){
             Sleep(1); // Sleep between requests
 
             // Receive header data from the client
-            recvbuf(server_socket,szbuffer);
+            recvbuf(server_socket,sa_out,szbuffer);
 
             // Extract data from the headers
             char cusername[128], filename[128], direction[3];
@@ -103,8 +103,8 @@ int main(void){
             cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
 
             // Respond to the client request
-            if(!strcmp(direction,GET))      put(server_socket,PUT,filename);
-            else if(!strcmp(direction,PUT)) get(server_socket,GET,filename);
+            if(!strcmp(direction,GET))      put(server_socket,sa_out,PUT,filename);
+            else if(!strcmp(direction,PUT)) get(server_socket,sa_out,GET,filename);
             else                            throw "Requested protocol does not exist";
 
         }
