@@ -32,6 +32,7 @@ int main(void){
     //socket data types
     SOCKET client_socket;   // Client socket
     SOCKADDR_IN sa_in;      // fill with server info, IP, port
+    SOCKADDR_IN sa_out;      // fill with server info, IP, port
 
     char szbuffer[BUFFER_SIZE]; // Buffer
 
@@ -68,7 +69,7 @@ int main(void){
 
         //Fill-in UDP Port and Address info.
         sa_in.sin_family = AF_INET;
-        sa_in.sin_port = htons(ROUTER_PORT1);
+        sa_in.sin_port = htons(PEER_PORT2);
         sa_in.sin_addr.s_addr = htonl(INADDR_ANY);
 
         // Create the socket
@@ -79,16 +80,15 @@ int main(void){
             throw "can't bind the socket1";
 
         //Specify server address for client to connect to server.
-        memset(&sa_in,0,sizeof(sa_in));
-        memcpy(&sa_in.sin_addr,rp->h_addr,rp->h_length);
-        sa_in.sin_family = rp->h_addrtype;   
-        sa_in.sin_port = htons(port);
+        memcpy(&sa_out.sin_addr,rp->h_addr,rp->h_length);
+        sa_out.sin_family = rp->h_addrtype;   
+        sa_out.sin_port = htons(ROUTER_PORT2);
 
         //Display the host machine internet address
-        cout << "Connecting to remote host:" << inet_ntoa(sa_in.sin_addr) << endl;
+        cout << "Connecting to remote host:" << inet_ntoa(sa_out.sin_addr) << ":" << ROUTER_PORT2 << endl;
 
         //Connect Client to the server
-        if (connect(client_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR)    throw "connect failed\n";
+        if (connect(client_socket,(LPSOCKADDR)&sa_out,sizeof(sa_out)) == SOCKET_ERROR)    throw "connect failed\n";
 
         prompt("Please enter a filename: ",filename);              // Retrieve a filename from the client
         prompt("Direction of transfer [get|put]: ",direction);     // Retrieve a transfer direction
