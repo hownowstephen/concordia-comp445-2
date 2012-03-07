@@ -68,7 +68,7 @@ int main(void){
         sa_in.sin_addr.s_addr = htonl(INADDR_ANY);
 
         // Bind to the server port
-        if (bind(server_socket,(LPSOCKADDR)&sa,sizeof(sa)) == SOCKET_ERROR) throw "can't bind local host socket";
+        if (bind(server_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR) throw "can't bind local host socket";
 
         // Prompt for router connection
         prompt("Enter the router hostname: ", router);
