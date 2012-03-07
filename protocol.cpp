@@ -25,6 +25,7 @@ using namespace std;
 #define TIMEOUT_USEC 300000 //time-out value
 
 int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZE){
+    int ibytesrecv = 0;             // Number of bytes received
     int ibytessent = 0;             // Number of bytes sent
     int result;                     // Result of select call
     fd_set readfds;                 // Used by select to manage file descriptor multiplexing
@@ -45,7 +46,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZ
         if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
             throw "Timer error!";
         }else if(result > 0){
-            if((recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
+            if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                 throw "Ack recv failed";
             }else{
                 // TODO: Verify the sequence number of this request
@@ -58,6 +59,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZ
 }
 
 int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SIZE){
+    int ibytesrecv = 0;             // Number of bytes received
     int ibytessent = 0;             // Number of bytes sent
     int result;                     // Result of select call
     fd_set readfds;                 // Used by select to manage file descriptor multiplexing
