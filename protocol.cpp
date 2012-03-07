@@ -79,7 +79,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
         if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
             throw "Recv failed";
         }else{
-            if ((ibytessent = sendto(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
+            if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                 throw "Send failed"; 
             }else{
                 // TODO: Figure out what to do after the send on the recvbuf side

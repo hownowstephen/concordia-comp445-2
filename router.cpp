@@ -250,7 +250,8 @@ void Router::Run()
 //////////////////////////////////////////////////////////
 
 void Router::SendProc()
-{
+{   
+    cout << "Sending packet" << endl;
     try
     {
         if(FileBuf.destination==1)
