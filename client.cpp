@@ -27,18 +27,10 @@ int ibytesrecv=0;
 HOSTENT *hp;
 HOSTENT *rp;
 
-// Filename to be transferred
-
-void prompt(char* message, char*buffer){
-    cout << message << flush ;  // Print the message
-    cin >> buffer;              // Record the input into the buffer
-}
-
 int main(void){
 
     //socket data types
     SOCKET client_socket;   // Client socket
-    SOCKADDR_IN sa;         // filled by bind
     SOCKADDR_IN sa_in;      // fill with server info, IP, port
 
     char szbuffer[BUFFER_SIZE]; // Buffer
@@ -74,8 +66,17 @@ int main(void){
 
         if((rp=gethostbyname(remotehost)) == NULL)  throw "Remote gethostbyname failed\n";
 
-        //Create the socket
-        if((client_socket = socket(AF_INET,SOCK_STREAM,0))==INVALID_SOCKET)  throw "Socket failed\n";
+        //Fill-in UDP Port and Address info.
+        sa_in.sin_family = AF_INET;
+        sa_in.sin_port = htons(ROUTER_PORT1);
+        sa_in.sin_addr.s_addr = htonl(INADDR_ANY);
+
+        // Create the socket
+        if((client_socket = socket(AF_INET,SOCK_DGRAM,0))==INVALID_SOCKET)  throw "Socket failed\n";
+
+        // Bind to the client port
+        if (bind(client_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR)
+            throw "can't bind the socket1";
 
         //Specify server address for client to connect to server.
         memset(&sa_in,0,sizeof(sa_in));

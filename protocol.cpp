@@ -12,8 +12,10 @@
 
 using namespace std;
 
-#define ROUTER_PORT1 7000   // router port number 1
-#define ROUTER_PORT2 7001   // router port number 2
+#define ROUTER_PORT1 7000   // router port number 1 (server)
+#define ROUTER_PORT2 7001   // router port number 2 (client)
+#define PEER_PORT1  5001    // peer port number 1 (server)
+#define PEER_PORT2  5002    // peer port number 2 (client)
 #define BUFFER_SIZE 2048    // Size (in bytes) of the buffer
 #define GET "get"           // Method name for GET requests
 #define PUT "put"           // Method name for PUT requests
@@ -39,6 +41,11 @@ int recvbuf(SOCKET sock, char* buffer, int buffer_size=BUFFER_SIZE){
     }else{
         return ibytesrecv;  // Return the amount of data received
     }
+}
+
+void prompt(char* message, char*buffer){
+    cout << message << flush ;  // Print the message
+    cin >> buffer;              // Record the input into the buffer
 }
 
 void get(SOCKET s, char * username, char * filename){

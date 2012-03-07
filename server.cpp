@@ -30,8 +30,10 @@ int main(void){
     WSADATA wsadata;            // Winsock connection object
     int result;                 // Retains result of spawning a thread
     char localhost[11];         // Store the value of localhost
+    char router[11];            // Store the name of the router
     HOSTENT *hp;                // Host entity
-    SOCKADDR_IN sa;             // fill with server info, IP, port
+    SOCKADDR_IN sa_in;          // fill with server info, IP, port
+    SOCKADDR_IN sa_out;         // fill with router info
     char szbuffer[BUFFER_SIZE]; // buffer object
      
     try {
@@ -50,21 +52,36 @@ int main(void){
 
         //Display info of local host
         gethostname(localhost,10);
+
         cout<<"hostname: "<<localhost<< endl;
 
         // Ensure the local machine has an addressable name
         if((hp=gethostbyname(localhost)) == NULL)   throw "gethostbyname() cannot get local host info"; 
 
         //Create the UDP server socket
-        if((server_socket = socket(AF_INET,SOCK_STREAM,0))==INVALID_SOCKET)  throw "can't initialize socket";
+        if((server_socket = socket(AF_INET,SOCK_DGRAM,0))==INVALID_SOCKET)  throw "can't initialize socket";
 
         //Fill-in Server Port and Address info.
-        sa.sin_family = AF_INET;
-        sa.sin_port = htons(port);
-        sa.sin_addr.s_addr = htonl(INADDR_ANY);
+        sa_in.sin_family = AF_INET;
+        sa_in.sin_port = htons(PEER_PORT1);
+        sa_in.sin_addr.s_addr = htonl(INADDR_ANY);
+
+        // Bind to the server port
+        if (bind(server_socket,(LPSOCKADDR)&sa,sizeof(sa)) == SOCKET_ERROR) throw "can't bind local host socket";
+
+        // Prompt for router connection
+        prompt("Enter the router hostname: ", router);
+
+        // Load remote host details
+        if((rp=gethostbyname(router)) == NULL) throw "supplied router name could not be found on the network";
+
+        //Fill-in Server Port and Address info.
+        memcpy(&sa_out.sin_addr,rp->h_addr,rp->h_length);
+        sa_out.sin_family = rp->h_addrtype;
+        sa_out.sin_port = htons(ROUTER_PORT1);
 
         // Connect to the router (or exit if it is not online)
-        if (connect(server_socket,(LPSOCKADDR)&sa,sizeof(sa)) == SOCKET_ERROR) throw "connecting to the router failed";
+        if (connect(server_socket,(LPSOCKADDR)&sa_out,sizeof(sa_out)) == SOCKET_ERROR) throw "connecting to the router failed";
 
         // Server will block waiting for new client requests indefinitely
         while(1) {
