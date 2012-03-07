@@ -12,13 +12,13 @@
 
 using namespace std;
 
-#define REQUEST_PORT 0x7070 // Port to listen on
+#define ROUTER_PORT1 7000   // router port number 1
+#define ROUTER_PORT2 7001   // router port number 2
 #define BUFFER_SIZE 2048    // Size (in bytes) of the buffer
 #define GET "get"           // Method name for GET requests
 #define PUT "put"           // Method name for PUT requests
 #define OK "OK"             // Expected response for successful transfers
 #define MISSING "NO"        // Expected response for failed transfers
-#define STKSIZE  16536      // Size of available stack to provide to threads
 #define HEADER "%s\t%s\t%s" // Format string for headers
 
 int sendbuf(SOCKET sock, char* buffer,int buffer_size=BUFFER_SIZE){

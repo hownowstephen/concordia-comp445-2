@@ -15,7 +15,7 @@ using namespace std;
 #include "protocol.cpp"
 
 
-int port=REQUEST_PORT;
+int port=ROUTER_PORT2;
 
 //buffer data types
 
@@ -67,7 +67,7 @@ int main(void){
         gethostname(localhost,10);
         cout << "Local host name is \"" << localhost << "\"" << endl;
 
-        if((hp=gethostbyname(localhost)) == NULL)   throw "Localhoost gethostbyname failed\n";
+        if((hp=gethostbyname(localhost)) == NULL)   throw "Localhost gethostbyname failed\n";
 
         //Ask for name of remote server
         prompt("please enter your remote server name: ",remotehost);
@@ -75,7 +75,7 @@ int main(void){
         if((rp=gethostbyname(remotehost)) == NULL)  throw "Remote gethostbyname failed\n";
 
         //Create the socket
-        if((client_socket = socket(AF_INET,SOCK_DGRAM,0))==INVALID_SOCKET)  throw "Socket failed\n";
+        if((client_socket = socket(AF_INET,SOCK_STREAM,0))==INVALID_SOCKET)  throw "Socket failed\n";
 
         //Specify server address for client to connect to server.
         memset(&sa_in,0,sizeof(sa_in));

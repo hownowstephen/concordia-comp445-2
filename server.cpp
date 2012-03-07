@@ -16,55 +16,13 @@ using namespace std;
 
 #include "protocol.cpp"
 
-int port = REQUEST_PORT; // Listening port
+int port = ROUTER_PORT1; // Listening port
 SOCKET server_socket;    // Global listening socket
 fd_set readfds;          // Socket multiplex
 int infds=1, outfds=0;
 
 struct timeval timeout;             // Socket timeout struct
 const struct timeval *tp=&timeout;
-
-void handle_client(){
-    /* Client handler function, spawned by the main loop in response to a client connection */
-
-    SOCKET client_socket;       // Client socket this function is bound to
-    char szbuffer[BUFFER_SIZE]; // Buffer for client/server communication
-    int ibytesrecv;             // Retains a count of received bytes from the client
-
-    union { struct sockaddr generic; struct sockaddr_in ca_in; } ca; // Client socket addressing
-    int calen=sizeof(ca);                                            // Length of client socket addressing
-
-    try {
-
-        //Found a connection request, try to accept. 
-        if((client_socket=accept(server_socket,&ca.generic,&calen))==INVALID_SOCKET)   throw "Couldn't accept connection\n";
-
-        //Connection request accepted.
-        cout<<"accepted connection from "<<inet_ntoa(ca.ca_in.sin_addr)<<":"<<htons(ca.ca_in.sin_port)<<endl;
-
-        // Receive header data from the client
-        recvbuf(client_socket,szbuffer);
-
-        // Extract data from the headers
-        char cusername[128], filename[128], direction[3];
-        sscanf(szbuffer,HEADER,cusername,direction,filename);
-
-        // Print out the information
-        cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
-
-        // Respond to the client request
-        if(!strcmp(direction,GET))      put(client_socket,PUT,filename);
-        else if(!strcmp(direction,PUT)) get(client_socket,GET,filename);
-        else                            throw "Requested protocol does not exist";
-    
-    // Catch any errors
-    } catch(const char* str){
-        cerr << str << endl;
-    }
-
-    //close Client socket
-    closesocket(client_socket);    
-}
 
 int main(void){
     /* Main function, performs the listening loop for client connections */
@@ -75,6 +33,7 @@ int main(void){
     HOSTENT *hp;                // Host entity
     SOCKADDR_IN sa;             // filled by bind
     SOCKADDR_IN sa1;            // fill with server info, IP, port
+    char szbuffer[BUFFER_SIZE]; // buffer object
      
     try {
         if (WSAStartup(0x0202,&wsadata)!=0){  
@@ -98,7 +57,7 @@ int main(void){
         if((hp=gethostbyname(localhost)) == NULL)   throw "gethostbyname() cannot get local host info"; 
 
         //Create the UDP server socket
-        if((server_socket = socket(AF_INET,SOCK_DGRAM,0))==INVALID_SOCKET)  throw "can't initialize socket";
+        if((server_socket = socket(AF_INET,SOCK_STREAM,0))==INVALID_SOCKET)  throw "can't initialize socket";
 
         //Fill-in Server Port and Address info.
         sa.sin_family = AF_INET;
@@ -111,18 +70,31 @@ int main(void){
         //Successfull bind, now listen for client requests.
         if(listen(server_socket,10) == SOCKET_ERROR)    throw "couldn't  set up listen on socket";
 
-        FD_ZERO(&readfds);
+        // Connect to the router (or exit if it is not online)
+        if (connect(server_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR) throw "connecting to the router failed";
 
-        while(1){   
-            Sleep(1);   // Sleep to allow for interrupts
-            FD_SET(server_socket,&readfds);  //always check the listener
-            if((outfds=select(infds,&readfds,NULL,NULL,tp)) == SOCKET_ERROR) throw "failure in Select";
-            else if (FD_ISSET(server_socket,&readfds)){
-                // Received a new connection request, spawn a subthread with handle_client to respond
-                int args = 0;
-                result = _beginthread((void (*)(void *))handle_client, STKSIZE, (void *) args);
-            }
+        // Server will block waiting for new client requests indefinitely
+        while(1) {
+
+            Sleep(1); // Sleep between requests
+
+            // Receive header data from the client
+            recvbuf(server_socket,szbuffer);
+
+            // Extract data from the headers
+            char cusername[128], filename[128], direction[3];
+            sscanf(szbuffer,HEADER,cusername,direction,filename);
+
+            // Print out the information
+            cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
+
+            // Respond to the client request
+            if(!strcmp(direction,GET))      put(server_socket,PUT,filename);
+            else if(!strcmp(direction,PUT)) get(server_socket,GET,filename);
+            else                            throw "Requested protocol does not exist";
+
         }
+
     // Catch and print any errors
     } catch(const char * str){
         cerr << str << endl;
