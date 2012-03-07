@@ -32,6 +32,7 @@ int main(void){
     char localhost[11];         // Store the value of localhost
     char router[11];            // Store the name of the router
     HOSTENT *hp;                // Host entity
+    HOSTENT *rp;                // Router entity
     SOCKADDR_IN sa_in;          // fill with server info, IP, port
     SOCKADDR_IN sa_out;         // fill with router info
     char szbuffer[BUFFER_SIZE]; // buffer object
