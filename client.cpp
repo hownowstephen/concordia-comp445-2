@@ -80,6 +80,7 @@ int main(void){
             throw "can't bind the socket1";
 
         //Specify server address for client to connect to server.
+        memset(&sa_out,0,sizeof(sa_out));
         memcpy(&sa_out.sin_addr,rp->h_addr,rp->h_length);
         sa_out.sin_family = rp->h_addrtype;   
         sa_out.sin_port = htons(ROUTER_PORT2);
@@ -116,7 +117,7 @@ int main(void){
 
     //Display any needed error response.
     catch (const char *str) { 
-        cerr <<str<<endl;
+        cerr << str << endl;
     }
 
     //close the client socket and clean up

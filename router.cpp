@@ -84,7 +84,7 @@ Router::Router(char *fn)        //Constructor
         sa_in_peer2.sin_port = htons(PEER_PORT2);
 
     }       
-    catch (const char *str) {cerr<<str<<":"<<dec<<WSAGetLastError()<<endl; exit(1);}
+    catch (const char *str) { cerr << str << ":" << dec << WSAGetLastError() << endl; exit(1); }
 
     srand( (unsigned)time( NULL ) );
 }

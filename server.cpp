@@ -77,6 +77,7 @@ int main(void){
         if((rp=gethostbyname(router)) == NULL) throw "supplied router name could not be found on the network";
 
         //Fill-in Server Port and Address info.
+        memset(&sa_out,0,sizeof(sa_out));
         memcpy(&sa_out.sin_addr,rp->h_addr,rp->h_length);
         sa_out.sin_family = rp->h_addrtype;
         sa_out.sin_port = htons(ROUTER_PORT1);
