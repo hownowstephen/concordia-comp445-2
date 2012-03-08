@@ -22,7 +22,7 @@ using namespace std;
 #define OK "OK"             // Expected response for successful transfers
 #define MISSING "NO"        // Expected response for failed transfers
 #define HEADER "%s\t%s\t%s" // Format string for headers
-#define TIMEOUT_USEC 1000000 //time-out value
+#define TIMEOUT_USEC 300000 //time-out value
 
 int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZE){
     int ibytesrecv = 0;             // Number of bytes received
@@ -51,11 +51,14 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZ
             }else{
                 // TODO: Verify the sequence number of this request
                 cout << "Finished negotiating a packet" << endl;
+                memset(buffer,0,buffer_size);
+                return ibytessent; 
             }
+        }else{
+            // Otherwise re-initiate the process
+            return sendbuf(sock, sa, buffer, buffer_size);
         }
-        memset(buffer,0,buffer_size);
-        return ibytessent; 
-    }   
+    }
 }
 
 int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SIZE){
@@ -75,7 +78,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
     cout << "Waiting for data from peer" << endl;
     if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
         throw "Timer error!";
-    }else{
+    }else if(result > 0){
         memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
         if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
             throw "Recv failed";
@@ -89,6 +92,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
                 return ibytesrecv;  // Return the amount of data received
             }
         }
+    }else{
+        return recvbuf(sock, sa, buffer, buffer_size);
     }
     
 }
