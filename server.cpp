@@ -16,7 +16,6 @@ using namespace std;
 
 #include "protocol.cpp"
 
-int port = ROUTER_PORT1; // Listening port
 SOCKET server_socket;    // Global listening socket
 fd_set readfds;          // Socket multiplex
 int infds=1, outfds=0;
@@ -76,17 +75,11 @@ int main(void){
         // Load remote host details
         if((rp=gethostbyname(router)) == NULL) throw "supplied router name could not be found on the network";
 
-        //Fill-in Server Port and Address info.
+        //Fill-in router address info.
         memset(&sa_out,0,sizeof(sa_out));
         memcpy(&sa_out.sin_addr,rp->h_addr,rp->h_length);
         sa_out.sin_family = rp->h_addrtype;
         sa_out.sin_port = htons(ROUTER_PORT1);
-
-        // Connect to the router (or exit if it is not online)
-        if (connect(server_socket,(LPSOCKADDR)&sa_out,sizeof(sa_out)) == SOCKET_ERROR) throw "connecting to the router failed";
-
-        //Display the host machine internet address
-        cout << "Connected to remote host: " << inet_ntoa(sa_out.sin_addr) << ":" << ROUTER_PORT1 << endl;
 
         // Server will block waiting for new client requests indefinitely
         while(1) {

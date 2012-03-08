@@ -14,9 +14,6 @@ using namespace std;
 
 #include "protocol.cpp"
 
-
-int port=ROUTER_PORT2;
-
 //buffer data types
 
 int ibufferlen=0;
@@ -79,17 +76,11 @@ int main(void){
         if (bind(client_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR)
             throw "can't bind the socket1";
 
-        //Specify server address for client to connect to server.
+        //Specify router address info
         memset(&sa_out,0,sizeof(sa_out));
         memcpy(&sa_out.sin_addr,rp->h_addr,rp->h_length);
         sa_out.sin_family = rp->h_addrtype;   
         sa_out.sin_port = htons(ROUTER_PORT2);
-
-        //Connect Client to the server
-        if (connect(client_socket,(LPSOCKADDR)&sa_out,sizeof(sa_out)) == SOCKET_ERROR)    throw "connect failed\n";
-
-        //Display the host machine internet address
-        cout << "Connected to remote host: " << inet_ntoa(sa_out.sin_addr) << ":" << ROUTER_PORT2 << endl;
 
         prompt("Please enter a filename: ",filename);              // Retrieve a filename from the client
         prompt("Direction of transfer [get|put]: ",direction);     // Retrieve a transfer direction
