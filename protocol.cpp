@@ -72,6 +72,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
     char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
     int from = sizeof(sa);            // Size of the sockaddr
 
+    int packet_num = 0; // TODO: pass this as a param to recvbuf
+
     FD_ZERO(&readfds);
     FD_SET(sock,&readfds);
 
