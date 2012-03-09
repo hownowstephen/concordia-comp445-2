@@ -108,7 +108,7 @@ int main(void){
 
     //Display any needed error response.
     catch (const char *str) { 
-        cerr << str << endl;
+        cerr << str << WSAGetLastError() << endl;
     }
 
     //close the client socket and clean up

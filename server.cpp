@@ -103,7 +103,7 @@ int main(void){
 
     // Catch and print any errors
     } catch(const char * str){
-        cerr << str << endl;
+        cerr << str << WSAGetLastError() << endl;
     }
 
     //close server socket and clean up the winsock
