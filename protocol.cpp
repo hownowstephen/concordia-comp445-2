@@ -56,7 +56,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
             }
         }else{
             // Otherwise re-initiate the process
-            return sendbuf(sock, sa, buffer, buffer_size);
+            return sendbuf(sock, sa, &packet_num, buffer, buffer_size);
         }
     }
 }
@@ -93,7 +93,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
             }
         }
     }else{
-        return recvbuf(sock, sa, buffer, buffer_size);
+        return recvbuf(sock, sa, &packet_num, buffer, buffer_size);
     }
     
 }
@@ -171,6 +171,8 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
 
 
 void put(SOCKET s, SOCKADDR_IN sa, char * username, const char* filename){
+
+    int packet_num = 0;
 
     char szbuffer[BUFFER_SIZE];
 
