@@ -25,15 +25,15 @@ using namespace std;
 #define TIMEOUT_USEC 600000 //time-out value
 
 int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZE){
-    int ibytesrecv = 0;             // Number of bytes received
-    int ibytessent = 0;             // Number of bytes sent
-    int result;                     // Result of select call
-    fd_set readfds;                 // Used by select to manage file descriptor multiplexing
-    struct timeval *tp=new timeval; // Timeout struct
-    tp->tv_sec=0;                   // Set current time
-    tp->tv_usec=TIMEOUT_USEC;       // Set timeout time
-    char* control_buffer;           // Control flow buffer, used to store the ACK result
-    int from = sizeof(sa);          // Size of the sockaddr
+    int ibytesrecv = 0;               // Number of bytes received
+    int ibytessent = 0;               // Number of bytes sent
+    int result;                       // Result of select call
+    fd_set readfds;                   // Used by select to manage file descriptor multiplexing
+    struct timeval *tp=new timeval;   // Timeout struct
+    tp->tv_sec=0;                     // Set current time
+    tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
+    char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
+    int from = sizeof(sa);            // Size of the sockaddr
 
     if ((ibytessent = sendto(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
         throw "Send failed"; 
@@ -50,7 +50,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZ
                 throw "Ack recv failed";
             }else{
                 // TODO: Verify the sequence number of this request
-                cout << "Finished negotiating a packet" << endl;
+                cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                 memset(buffer,0,buffer_size);
                 return ibytessent; 
             }
@@ -62,15 +62,15 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZ
 }
 
 int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SIZE){
-    int ibytesrecv = 0;             // Number of bytes received
-    int ibytessent = 0;             // Number of bytes sent
-    int result;                     // Result of select call
-    fd_set readfds;                 // Used by select to manage file descriptor multiplexing
-    struct timeval *tp=new timeval; // Timeout struct
-    tp->tv_sec=0;                   // Set current time
-    tp->tv_usec=TIMEOUT_USEC;       // Set timeout time
-    char* control_buffer;           // Control flow buffer, used to store the ACK result
-    int from = sizeof(sa);          // Size of the sockaddr
+    int ibytesrecv = 0;               // Number of bytes received
+    int ibytessent = 0;               // Number of bytes sent
+    int result;                       // Result of select call
+    fd_set readfds;                   // Used by select to manage file descriptor multiplexing
+    struct timeval *tp=new timeval;   // Timeout struct
+    tp->tv_sec=0;                     // Set current time
+    tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
+    char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
+    int from = sizeof(sa);            // Size of the sockaddr
 
     FD_ZERO(&readfds);
     FD_SET(sock,&readfds);
@@ -82,8 +82,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
         if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
             throw "Recv failed";
         }else{
-            cout << "Sending data" << endl;
-            sprintf(control_buffer,"ACK");
+            sprintf(control_buffer,"%d %s",packet_num,OK);
+            cout << "Sending acknowledgment message " << control_buffer << endl;
             if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                 throw "Send failed"; 
             }else{
