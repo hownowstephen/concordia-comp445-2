@@ -14,8 +14,8 @@ using namespace std;
 
 #define ROUTER_PORT1 7000   // router port number 1 (server)
 #define ROUTER_PORT2 7001   // router port number 2 (client)
-#define PEER_PORT1  5001    // peer port number 1 (server)
-#define PEER_PORT2  5002    // peer port number 2 (client)
+#define PEER_PORT1  5000    // peer port number 1 (server)
+#define PEER_PORT2  5001    // peer port number 2 (client)
 #define BUFFER_SIZE 2048    // Size (in bytes) of the buffer
 #define GET "get"           // Method name for GET requests
 #define PUT "put"           // Method name for PUT requests
