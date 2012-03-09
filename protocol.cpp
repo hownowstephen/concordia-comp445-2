@@ -75,7 +75,6 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
     FD_ZERO(&readfds);
     FD_SET(sock,&readfds);
 
-    cout << "Waiting for data from peer" << endl;
     if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
         throw "Timer error!";
     }else if(result > 0){
@@ -84,6 +83,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
             throw "Recv failed";
         }else{
             cout << "Sending data" << endl;
+            sprintf(control_buffer,"ACK");
             if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                 throw "Send failed"; 
             }else{
