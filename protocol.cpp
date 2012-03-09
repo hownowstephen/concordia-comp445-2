@@ -22,7 +22,7 @@ using namespace std;
 #define OK "OK"             // Expected response for successful transfers
 #define MISSING "NO"        // Expected response for failed transfers
 #define HEADER "%s\t%s\t%s" // Format string for headers
-#define TIMEOUT_USEC 300000 //time-out value
+#define TIMEOUT_USEC 600000 //time-out value
 
 int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZE){
     int ibytesrecv = 0;             // Number of bytes received
