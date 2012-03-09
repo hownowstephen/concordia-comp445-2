@@ -26,6 +26,8 @@ HOSTENT *rp;
 
 int main(void){
 
+    int packet_num = 0; // Client negotiates with packet zero from the outset
+
     //socket data types
     SOCKET client_socket;   // Client socket
     SOCKADDR_IN sa_in;      // fill with server info, IP, port
@@ -93,7 +95,7 @@ int main(void){
 
             // Send client headers
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
-            sendbuf(client_socket,sa_out,szbuffer);
+            sendbuf(client_socket,sa_out,&packet_num,szbuffer);
 
             // Perform a get request
             if(!strcmp(direction,GET)) get(client_socket,sa_out,cusername,filename);

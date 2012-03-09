@@ -24,7 +24,7 @@ using namespace std;
 #define HEADER "%s\t%s\t%s" // Format string for headers
 #define TIMEOUT_USEC 600000 //time-out value
 
-int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZE){
+int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffer_size=BUFFER_SIZE){
     int ibytesrecv = 0;               // Number of bytes received
     int ibytessent = 0;               // Number of bytes sent
     int result;                       // Result of select call
@@ -61,7 +61,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer,int buffer_size=BUFFER_SIZ
     }
 }
 
-int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SIZE){
+int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buffer_size=BUFFER_SIZE){
     int ibytesrecv = 0;               // Number of bytes received
     int ibytessent = 0;               // Number of bytes sent
     int result;                       // Result of select call
@@ -71,8 +71,6 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
     tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
     char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
     int from = sizeof(sa);            // Size of the sockaddr
-
-    int packet_num = 0; // TODO: pass this as a param to recvbuf
 
     FD_ZERO(&readfds);
     FD_SET(sock,&readfds);
@@ -84,7 +82,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, char* buffer, int buffer_size=BUFFER_SI
         if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
             throw "Recv failed";
         }else{
-            sprintf(control_buffer,"%d %s",packet_num,OK);
+            sprintf(control_buffer,"%d %s",&packet_num,OK);
             cout << "Sending acknowledgment message " << control_buffer << endl;
             if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                 throw "Send failed"; 
@@ -107,6 +105,8 @@ void prompt(char* message, char*buffer){
 
 void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
 
+    int packet_num = 0;
+
     char szbuffer[BUFFER_SIZE];
 
     //host data types
@@ -122,7 +122,7 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
     try {
         cout << "Waiting for file headers" << endl;
         //wait for reception of server response.
-        recvbuf(s,sa,szbuffer); // Get the response from the server
+        recvbuf(s,sa,packet_num,szbuffer); // Get the response from the server
         sscanf(szbuffer,"%s %d",response,&filesize);    // Extract file data
 
         cout << "Response " << response << " filesize " << filesize << endl;
@@ -136,14 +136,14 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
             // Send ack to start data transfer
             memset(szbuffer,0,BUFFER_SIZE);
             sprintf(szbuffer,"SEND");
-            sendbuf(s,sa,szbuffer); // Send an ACK
+            sendbuf(s,sa,packet_num,szbuffer); // Send an ACK
 
             int size = 0, count = 0;
             // Read data from the server until we have received the file
             while(count < filesize){
                 if(filesize - count >= BUFFER_SIZE) size = sizeof(szbuffer) / sizeof(char); // Read a full buffer
                 else                                size = (filesize - count) / sizeof(char);  // Read a shorter buffer
-                recvbuf(s,sa,szbuffer);
+                recvbuf(s,sa,packet_num,szbuffer);
                 fwrite(szbuffer,sizeof(char),size,recv_file);
                 count += sizeof(szbuffer);
                 cout << "Received " << count << " of " << filesize << " bytes" << endl;
@@ -157,7 +157,7 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
             // Clear the buffer and send an ack to the server to confirm receipt
             memset(szbuffer,0,BUFFER_SIZE);
             sprintf(szbuffer,"OK");
-            sendbuf(s,sa,szbuffer);    // Send confirmation of receipt
+            sendbuf(s,sa,packet_num,szbuffer);    // Send confirmation of receipt
 
             cout << "Completed transfer of " << filename << endl;
         }else{
@@ -200,19 +200,19 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, const char* filename){
             // Filesize headers
             sprintf(szbuffer,"%s %d",OK,filesize);
 
-            sendbuf(s,sa,szbuffer);    // Send the filesize
-            recvbuf(s,sa,szbuffer);    // Wait for ack from client
+            sendbuf(s,sa,packet_num,szbuffer);    // Send the filesize
+            recvbuf(s,sa,packet_num,szbuffer);    // Wait for ack from client
 
             int size = 0, sent = 0;
             // Loop through the file and stream in chunks based on the buffer size
             while ( !feof(send_file) ){
                 fread(szbuffer,1,BUFFER_SIZE,send_file);
                 cout << "Sending " << sizeof(szbuffer) << " bytes" << endl;
-                sendbuf(s,sa,szbuffer);
+                sendbuf(s,sa,packet_num,szbuffer);
             }
 
             fclose(send_file);
-            recvbuf(s,sa,szbuffer); // Receive the ack from the client
+            recvbuf(s,sa,packet_num,szbuffer); // Receive the ack from the client
 
             if(!strcmp(szbuffer,OK))    cout << "File transfer completed" << endl;
 
@@ -221,7 +221,7 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, const char* filename){
             cout << "File does not exist, sending decline" << endl;
             // Send back a NO to the client to indicate that the file does not exist
             sprintf(szbuffer,"NO -1");
-            sendbuf(s,sa,szbuffer);
+            sendbuf(s,sa,packet_num,szbuffer);
         }
     // Print out any errors
     } catch(const char* str){

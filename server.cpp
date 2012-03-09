@@ -26,6 +26,8 @@ const struct timeval *tp=&timeout;
 int main(void){
     /* Main function, performs the listening loop for client connections */
 
+    int packet_num = 1; // Server negotiates with packet zero from the outset
+
     WSADATA wsadata;            // Winsock connection object
     int result;                 // Retains result of spawning a thread
     char localhost[11];         // Store the value of localhost
@@ -85,7 +87,7 @@ int main(void){
         while(1) {
 
             // Receive header data from the client
-            recvbuf(server_socket,sa_out,szbuffer);
+            recvbuf(server_socket,sa_out,&packet_num,szbuffer);
 
             // Extract data from the headers
             char cusername[128], filename[128], direction[3];
