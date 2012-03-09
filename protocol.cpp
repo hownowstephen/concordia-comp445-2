@@ -22,80 +22,89 @@ using namespace std;
 #define OK "OK"             // Expected response for successful transfers
 #define MISSING "NO"        // Expected response for failed transfers
 #define HEADER "%s\t%s\t%s" // Format string for headers
-#define TIMEOUT_USEC 600000 //time-out value
+#define TIMEOUT_USEC 300000 //time-out value
 
 int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffer_size=BUFFER_SIZE){
-    int ibytesrecv = 0;               // Number of bytes received
-    int ibytessent = 0;               // Number of bytes sent
-    int result;                       // Result of select call
-    fd_set readfds;                   // Used by select to manage file descriptor multiplexing
-    struct timeval *tp=new timeval;   // Timeout struct
-    tp->tv_sec=0;                     // Set current time
-    tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
-    char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
-    int from = sizeof(sa);            // Size of the sockaddr
+    try{
+        int ibytesrecv = 0;               // Number of bytes received
+        int ibytessent = 0;               // Number of bytes sent
+        int result;                       // Result of select call
+        fd_set readfds;                   // Used by select to manage file descriptor multiplexing
+        struct timeval *tp=new timeval;   // Timeout struct
+        tp->tv_sec=0;                     // Set current time
+        tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
+        char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
+        int from = sizeof(sa);            // Size of the sockaddr
 
-    if ((ibytessent = sendto(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
-        throw "Send failed"; 
-    }else{
-
-        FD_ZERO(&readfds);
-        FD_SET(sock,&readfds);
-        cout << "Waiting on ack from peer" << endl;
-        // TODO: if anything fails, re-run sendbuf
-        if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
-            throw "Timer error!";
-        }else if(result > 0){
-            if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
-                throw "Ack recv failed";
-            }else{
-                // TODO: Verify the sequence number of this request
-                cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
-                memset(buffer,0,buffer_size);
-                return ibytessent; 
-            }
+        if ((ibytessent = sendto(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
+            throw "Send failed"; 
         }else{
-            // Otherwise re-initiate the process
-            return sendbuf(sock, sa, packet_num, buffer, buffer_size);
+
+            FD_ZERO(&readfds);
+            FD_SET(sock,&readfds);
+            cout << "Waiting on ack from peer" << endl;
+            // TODO: if anything fails, re-run sendbuf
+            if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
+                throw "Timer error!";
+            }else if(result > 0){
+                if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
+                    throw "Ack recv failed";
+                }else{
+                    // TODO: Verify the sequence number of this request
+                    cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
+                    memset(buffer,0,buffer_size);
+                    return ibytessent; 
+                }
+            }else{
+                // Otherwise re-initiate the process
+                return sendbuf(sock, sa, packet_num, buffer, buffer_size);
+            }
         }
+    }catch(const char* str){
+        cout << str << " attempting sendbuf again..." << endl;
+        return sendbuf(sock,sa,packet_num,buffer,buffer_size);
     }
 }
 
 int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buffer_size=BUFFER_SIZE){
-    int ibytesrecv = 0;               // Number of bytes received
-    int ibytessent = 0;               // Number of bytes sent
-    int result;                       // Result of select call
-    fd_set readfds;                   // Used by select to manage file descriptor multiplexing
-    struct timeval *tp=new timeval;   // Timeout struct
-    tp->tv_sec=0;                     // Set current time
-    tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
-    char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
-    int from = sizeof(sa);            // Size of the sockaddr
+    try{
+        int ibytesrecv = 0;               // Number of bytes received
+        int ibytessent = 0;               // Number of bytes sent
+        int result;                       // Result of select call
+        fd_set readfds;                   // Used by select to manage file descriptor multiplexing
+        struct timeval *tp=new timeval;   // Timeout struct
+        tp->tv_sec=0;                     // Set current time
+        tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
+        char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
+        int from = sizeof(sa);            // Size of the sockaddr
 
-    FD_ZERO(&readfds);
-    FD_SET(sock,&readfds);
+        FD_ZERO(&readfds);
+        FD_SET(sock,&readfds);
 
-    if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
-        throw "Timer error!";
-    }else if(result > 0){
-        memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
-        if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
-            throw "Recv failed";
-        }else{
-            sprintf(control_buffer,"%d %s",&packet_num,OK);
-            cout << "Sending acknowledgment message " << control_buffer << endl;
-            if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
-                throw "Send failed"; 
+        if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
+            throw "Timer error!";
+        }else if(result > 0){
+            memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
+            if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
+                throw "Recv failed";
             }else{
-                // TODO: Figure out what to do after the send on the recvbuf side
-                cout << "Sent ack successfully" << endl;
-                return ibytesrecv;  // Return the amount of data received
+                sprintf(control_buffer,"%d %s",packet_num,OK);
+                cout << "Sending acknowledgment message " << control_buffer << endl;
+                if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
+                    throw "Send failed"; 
+                }else{
+                    // TODO: Figure out what to do after the send on the recvbuf side
+                    cout << "Sent ack successfully" << endl;
+                    return ibytesrecv;  // Return the amount of data received
+                }
             }
+        }else{
+            return recvbuf(sock, sa, packet_num, buffer, buffer_size);
         }
-    }else{
-        return recvbuf(sock, sa, packet_num, buffer, buffer_size);
+    }catch(const char* str){
+        cout << str << " attempting recvbuf again..." << endl;
+        return recvbuf(sock,sa,packet_num,buffer,buffer_size);
     }
-    
 }
 
 void prompt(char* message, char*buffer){
@@ -170,7 +179,7 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
  }
 
 
-void put(SOCKET s, SOCKADDR_IN sa, char * username, const char* filename){
+void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename){
 
     int packet_num = 0;
 
