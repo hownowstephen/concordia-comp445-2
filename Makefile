@@ -5,7 +5,7 @@ CC   = gcc.exe
 LINKCLI = client.o
 LINKSRV  = server.o
 LINKRT = router.o
-OBJ = $(LINKCLI) $(LINKSRV) protocol.o
+OBJ = $(LINKCLI) $(LINKSRV) $(LINKRT) protocol.o
 LIBS = -lwsock32
 BINSRV = server
 BINCLI = client
@@ -15,7 +15,7 @@ RM = rm -f
 all: clean refresh update
 
 clean:
-	${RM} $(OBJ) $(BINSRV) $(BINCLI)
+	${RM} $(OBJ) $(BINSRV) $(BINCLI) $(BINRT)
 
 refresh:
 	git pull origin master
