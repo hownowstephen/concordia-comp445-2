@@ -181,7 +181,7 @@ void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename){
  }
 
 
-void put(SOCKET s, SOCKADDR_IN sa_ptr, char * username, char* filename){
+void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename){
 
     SOCKADDR_IN sa = *sa_ptr;
     int packet_num = 0;
