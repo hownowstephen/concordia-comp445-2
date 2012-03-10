@@ -112,7 +112,9 @@ void prompt(char* message, char*buffer){
     cin >> buffer;              // Record the input into the buffer
 }
 
-void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
+void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename){
+
+    SOCKADDR_IN sa = *sa_ptr;
 
     int packet_num = 0;
 
@@ -179,8 +181,9 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename){
  }
 
 
-void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename){
+void put(SOCKET s, SOCKADDR_IN sa_ptr, char * username, char* filename){
 
+    SOCKADDR_IN sa = *sa_ptr;
     int packet_num = 0;
 
     char szbuffer[BUFFER_SIZE];
