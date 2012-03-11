@@ -32,7 +32,7 @@ SOCKET open_port(int port){
     char hostname[11]; // Store the value of localhost
 
     // Retrieve the local hostname
-    gethostname(hostname,11)
+    gethostname(hostname,11);
 
     if((hp=gethostbyname(hostname)) == NULL)   throw "Could not determine a host address from supplied name";
     //Fill-in UDP Port and Address info.
@@ -50,7 +50,7 @@ SOCKET open_port(int port){
 SOCKADDR_IN prepare_peer_connection(char* hostname, int port){
     SOCKADDR_IN sa;
     HOSTENT *hp;
-    if((hp==gethostbyname(hostname)) == NULL) throw "Could not determine a host address from supplied name";
+    if((hp=gethostbyname(hostname)) == NULL) throw "Could not determine a host address from supplied name";
 
     // Fill in port and address information
     memcpy(&sa.sin_addr,hp->h_addr,hp->h_length);
