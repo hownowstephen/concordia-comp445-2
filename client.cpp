@@ -14,29 +14,18 @@ using namespace std;
 
 #include "protocol.cpp"
 
-//buffer data types
-
-int ibufferlen=0;
-int ibytessent;
-int ibytesrecv=0;
-
-//host data types
-HOSTENT *hp;
-HOSTENT *rp;
-
 int main(void){
 
     int packet_num = 0; // Client negotiates with packet zero from the outset
 
     //socket data types
     SOCKET client_socket;   // Client socket
-    SOCKADDR_IN sa_in;      // fill with server info, IP, port
     SOCKADDR_IN sa_out;      // fill with server info, IP, port
 
     char szbuffer[BUFFER_SIZE]; // Buffer
 
     WSADATA wsadata;                                    // WSA connection
-    char localhost[11], remotehost[11];                 // Host data
+    char router[11];                                    // Host data
     char cusername[128], filename[128], direction[3];   // Other header data
     DWORD dwusername = sizeof(cusername);               // Retains the size of the username
 
@@ -56,36 +45,13 @@ int main(void){
                 << "wsadata.iMaxUdpDg "      << wsadata.iMaxUdpDg      << endl;
         }  
 
-        gethostname(localhost,10);
-        cout << "Local host name is \"" << localhost << "\"" << endl;
+        client_socket = open_port(PEER_PORT2);
 
-        if((hp=gethostbyname(localhost)) == NULL)   throw "Localhost gethostbyname failed\n";
+        prompt("Enter the router hostname: ",router);
+        sa_out = prepare_peer_connection(router, ROUTER_PORT2);
 
-        //Ask for name of remote server
-        prompt("please enter your remote server name: ",remotehost);
-
-        if((rp=gethostbyname(remotehost)) == NULL)  throw "Remote gethostbyname failed\n";
-
-        //Fill-in UDP Port and Address info.
-        sa_in.sin_family = AF_INET;
-        sa_in.sin_port = htons(PEER_PORT2);
-        sa_in.sin_addr.s_addr = htonl(INADDR_ANY);
-
-        // Create the socket
-        if((client_socket = socket(AF_INET,SOCK_DGRAM,0))==INVALID_SOCKET)  throw "Socket failed\n";
-
-        // Bind to the client port
-        if (bind(client_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR)
-            throw "can't bind the socket1";
-
-        //Specify router address info
-        memset(&sa_out,0,sizeof(sa_out));
-        memcpy(&sa_out.sin_addr,rp->h_addr,rp->h_length);
-        sa_out.sin_family = rp->h_addrtype;   
-        sa_out.sin_port = htons(ROUTER_PORT2);
-
-        prompt("Please enter a filename: ",filename);              // Retrieve a filename from the client
-        prompt("Direction of transfer [get|put]: ",direction);     // Retrieve a transfer direction
+        prompt("Enter a filename: ",filename);                  // Retrieve a filename from the client
+        prompt("Direction of transfer [get|put]: ",direction);  // Retrieve a transfer direction
 
         // Make sure the direction is one of get or put
         if(!strcmp(direction,GET) || !strcmp(direction,PUT)){ 

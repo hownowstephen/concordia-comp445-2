@@ -16,27 +16,15 @@ using namespace std;
 
 #include "protocol.cpp"
 
-SOCKET server_socket;    // Global listening socket
-fd_set readfds;          // Socket multiplex
-int infds=1, outfds=0;
-
-struct timeval timeout;             // Socket timeout struct
-const struct timeval *tp=&timeout;
-
 int main(void){
     /* Main function, performs the listening loop for client connections */
 
-    int packet_num = 1; // Server negotiates with packet zero from the outset
-
-    WSADATA wsadata;            // Winsock connection object
-    int result;                 // Retains result of spawning a thread
-    char localhost[11];         // Store the value of localhost
-    char router[11];            // Store the name of the router
-    HOSTENT *hp;                // Host entity
-    HOSTENT *rp;                // Router entity
-    SOCKADDR_IN sa_in;          // fill with server info, IP, port
+    int packet_num = 1;         // Server negotiates with packet zero from the outset
+    SOCKET server_socket;       // Global listening socket
     SOCKADDR_IN sa_out;         // fill with router info
     char szbuffer[BUFFER_SIZE]; // buffer object
+    WSADATA wsadata;            // Winsock connection object
+    char router[11];            // Store the name of the router
      
     try {
         if (WSAStartup(0x0202,&wsadata)!=0){  
@@ -50,38 +38,12 @@ int main(void){
                 << "wsadata.szSystemStatus " << wsadata.szSystemStatus << endl
                 << "wsadata.iMaxSockets "    << wsadata.iMaxSockets    << endl
                 << "wsadata.iMaxUdpDg "      << wsadata.iMaxUdpDg      << endl;
-        }  
-
-        //Display info of local host
-        gethostname(localhost,10);
-
-        cout<<"hostname: "<<localhost<< endl;
-
-        // Ensure the local machine has an addressable name
-        if((hp=gethostbyname(localhost)) == NULL)   throw "gethostbyname() cannot get local host info"; 
-
-        //Create the UDP server socket
-        if((server_socket = socket(AF_INET,SOCK_DGRAM,0))==INVALID_SOCKET)  throw "can't initialize socket";
-
-        //Fill-in Server Port and Address info.
-        sa_in.sin_family = AF_INET;
-        sa_in.sin_port = htons(PEER_PORT1);
-        sa_in.sin_addr.s_addr = htonl(INADDR_ANY);
-
-        // Bind to the server port
-        if (bind(server_socket,(LPSOCKADDR)&sa_in,sizeof(sa_in)) == SOCKET_ERROR) throw "can't bind local host socket";
-
+        }
+        
+        server_socket = open_port(PEER_PORT1);
         // Prompt for router connection
         prompt("Enter the router hostname: ", router);
-
-        // Load remote host details
-        if((rp=gethostbyname(router)) == NULL) throw "supplied router name could not be found on the network";
-
-        //Fill-in router address info.
-        memset(&sa_out,0,sizeof(sa_out));
-        memcpy(&sa_out.sin_addr,rp->h_addr,rp->h_length);
-        sa_out.sin_family = rp->h_addrtype;
-        sa_out.sin_port = htons(ROUTER_PORT1);
+        sa_out = prepare_peer_connection(router, ROUTER_PORT1);
 
         // Server will block waiting for new client requests indefinitely
         while(1) {

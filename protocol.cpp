@@ -24,6 +24,41 @@ using namespace std;
 #define HEADER "%s\t%s\t%s" // Format string for headers
 #define TIMEOUT_USEC 300000 //time-out value
 
+
+SOCKET open_port(int port){
+    SOCKET socket;      // Define the socket to return
+    SOCKADDR_IN sa;     // Define the socket address information
+    HOSTENT *hp;        // Host entity details
+    char hostname[11]; // Store the value of localhost
+
+    // Retrieve the local hostname
+    gethostname(hostname,11)
+
+    if((hp=gethostbyname(hostname)) == NULL)   throw "Could not determine a host address from supplied name";
+    //Fill-in UDP Port and Address info.
+    sa.sin_family = AF_INET;
+    sa.sin_port = htons(port);
+    sa.sin_addr.s_addr = htonl(INADDR_ANY);
+     // Create the socket
+    if((socket = socket(AF_INET,SOCK_DGRAM,0))==INVALID_SOCKET) throw "Generating a new local socket failed";
+    // Bind to the client port
+    if (bind(socket,(LPSOCKADDR)&sa,sizeof(sa)) == SOCKET_ERROR) throw "Could not bind socket to supplied port";
+
+    return socket;
+}
+
+SOCKADDR_IN prepare_peer_connection(char* hostname, int port){
+    SOCKADDR_IN sa;
+    HOSTENT *hp;
+    if((hp==gethostbyname(hostname)) == NULL) throw "Could not determine a host address from supplied name"
+
+    // Fill in port and address information
+    memcpy(&sa.sin_addr,hp->h_addr,hp->h_length);
+    sa.sin_family = hp->h_addrtype;   
+    sa.sin_port = htons(port);
+    return sa;
+}
+
 int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffer_size=BUFFER_SIZE){
     try{
         int ibytesrecv = 0;               // Number of bytes received
