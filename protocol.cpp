@@ -40,6 +40,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
             throw "Send failed"; 
         }else{
 
+            return ibytessent;
+            /*
             FD_ZERO(&readfds);
             FD_SET(sock,&readfds);
             cout << "Waiting on ack from peer" << endl;
@@ -58,7 +60,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
             }else{
                 // Otherwise re-initiate the process
                 return sendbuf(sock, sa, packet_num, buffer, buffer_size);
-            }
+            }*/
         }
     }catch(const char* str){
         cout << str << " attempting sendbuf again..." << endl;
@@ -88,7 +90,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
             if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                 throw "Recv failed";
             }else{
-                sprintf(control_buffer,"%d %s",packet_num,OK);
+                return ibytesrecv;
+                /*sprintf(control_buffer,"%d %s",packet_num,OK);
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                     throw "Send failed"; 
@@ -96,7 +99,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                     // TODO: Figure out what to do after the send on the recvbuf side
                     cout << "Sent ack successfully" << endl;
                     return ibytesrecv;  // Return the amount of data received
-                }
+                }*/
             }
         }else{
             return recvbuf(sock, sa, packet_num, buffer, buffer_size);
