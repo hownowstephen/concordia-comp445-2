@@ -81,6 +81,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
             if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                 throw "Recv failed";
             }else{
+                memset(control_buffer,0,sizeof(control_buffer));
                 sprintf(control_buffer,"%d %s",packet_num,OK);
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
@@ -123,6 +124,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
             if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
                 throw "Timer error!";
             }else if(result > 0){
+                memset(control_buffer,0,sizeof(control_buffer));
                 if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
