@@ -94,11 +94,15 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 packeti = atoi(&packetc);
 
                 if(packeti == *packet_num){
-                    sprintf(control_buffer,"%d %s",packeti,OK);
+                    sprintf(control_buffer,"%d %s",packeti,OK); 
+                    if(*packet_num) buffer[BUFFER_SIZE-1] = '1';
+                    else            buffer[BUFFER_SIZE-1] = '0';
                 }else{
                     cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
                     sprintf(control_buffer,"%d %s",(int)!*packet_num,OK);
                     mismatch = true;
+                    if(*packet_num) buffer[BUFFER_SIZE-1] = '0';
+                    else            buffer[BUFFER_SIZE-1] = '1';
                 }
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
@@ -136,7 +140,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
-        char* verify;                       // Verify the received packet id
+        char verify;                       // Verify the received packet id
         char verify_ack[2];               // Verify the ack response
 
         cout << "Sending packet " << *packet_num << endl;
@@ -156,8 +160,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
-                    sscanf(control_buffer,"%s %s",verify,verify_ack);
-                    int verifyi = atoi(verify);
+                    verify = control_buffer[BUFFER_SIZE-1]
+                    int verifyi = atoi(&verify);
                     if(*packet_num == verifyi && !strcmp(verify_ack,OK)){
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                         if(*packet_num == 1) *packet_num = 0;
