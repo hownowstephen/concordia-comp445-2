@@ -160,7 +160,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
-                    verify = control_buffer[BUFFER_SIZE-1]
+                    verify = control_buffer[BUFFER_SIZE-1];
                     int verifyi = atoi(&verify);
                     if(*packet_num == verifyi && !strcmp(verify_ack,OK)){
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
