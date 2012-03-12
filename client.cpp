@@ -60,7 +60,30 @@ int main(void){
             // Retrieve the local user name
             GetUserName(cusername,&dwusername);
 
-            client_num = 0;
+            int selected = rand() % 256;
+            int received, verify;
+
+            // Send acknowledgement to the client along with our random number
+            sprintf(szbuffer,"RAND %d",selected);
+            sendbuf(server_socket, sa_out, &client_num, szbuffer);
+
+            // Finally wait for a response from the client with the number
+            recvbuf(server_socket,sa_out,&client_num,szbuffer);
+            sscanf(szbuffer,"RAND %d %d",verify,received);
+
+            if(verify != selected)  throw "An unexpected error occurred in the initial handshake";
+
+            // Send acknowledgement to the client along with our random number
+            sprintf(szbuffer,"RAND %d",received);
+            sendbuf(server_socket, sa_out, &client_num, szbuffer);
+
+            if(received != recieved_verify){
+                cout << "Something went wrong in the initial handshake..." << endl;
+                continue;
+            }
+
+            client_num = recieved & 0x1;
+            server_num = selected % 0x1;
 
             // Send client headers
             sprintf(szbuffer,HEADER, cusername, direction, filename); 

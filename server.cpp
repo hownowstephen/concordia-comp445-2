@@ -49,10 +49,34 @@ int main(void){
         // Server will block waiting for new client requests indefinitely
         while(1) {
 
-            client_num = 0;
+            int selected = rand() % 256;
+            int received, received_verify;
+
+            // Receive a random number from the client
+            recvbuf(server_socket,sa_out,&client_num,szbuffer);
+            sscanf(szbuffer,"RAND %d",received);
+
+            // Send acknowledgement to the client along with our random number
+            sprintf(szbuffer,"RAND %d %d",received,selected);
+            sendbuf(server_socket, sa_out, &client_num, szbuffer);
+
+            // Finally wait for a response from the client with the number
+            recvbuf(server_socket,sa_out,&client_num,szbuffer);
+            sscanf(szbuffer,"RAND %d",received_verify);
+
+            if(selected != recieved_verify){
+                cout << "Something went wrong in the initial handshake..." << endl;
+                continue;
+            }
+
+            client_num = recieved & 0x1;
+            server_num = selected % 0x1;
 
             // Receive header data from the client
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
+
+            client_num = received & 0x1;
+            server_num = selected & 0x1;
 
             // Extract data from the headers
             char cusername[128], filename[128], direction[3];
@@ -60,10 +84,6 @@ int main(void){
 
             // Print out the information
             cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
-
-            // TODO: Proper three-way handshake
-            client_num = 0;
-            server_num = 0;
 
             // Respond to the client request
             if(!strcmp(direction,GET))      put(server_socket, sa_out, PUT, filename, server_num, client_num);
