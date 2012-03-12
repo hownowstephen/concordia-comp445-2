@@ -81,6 +81,8 @@ int main(void){
                 break;
             }
 
+            client_num = 1;
+
             while(1){
                 // Send acknowledgement to the client along with our random number
                 sprintf(szbuffer,"RAND %d",received);
