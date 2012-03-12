@@ -16,6 +16,8 @@ using namespace std;
 
 #include "protocol.cpp"
 
+log_file = fopen("server.log","wb");
+
 void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     char szbuffer[BUFFER_SIZE]; // buffer object
@@ -72,9 +74,13 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
     cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
 
     // Respond to the client request
-    if(!strcmp(direction,GET))      put(server_socket, sa_out, PUT, filename, client_num);
-    else if(!strcmp(direction,PUT)) get(server_socket, sa_out, GET, filename, client_num);
-    else                            throw "Requested protocol does not exist";
+    if(!strcmp(direction,GET)){
+        trace_prefix = SEND;
+        put(server_socket, sa_out, PUT, filename, client_num);
+    else if(!strcmp(direction,PUT)){
+        trace_prefix = RECV;
+        get(server_socket, sa_out, GET, filename, client_num);
+    }else   throw "Requested protocol does not exist";
 }
 
 int main(void){
@@ -106,7 +112,10 @@ int main(void){
         sa_out = prepare_peer_connection(router, ROUTER_PORT1);
 
         // Server will block waiting for new client requests indefinitely
-        while(1)    handle_client(server_socket, sa_out);
+        while(1){
+            trace_prefix = "Server";
+            handle_client(server_socket, sa_out);
+        }
 
     // Catch and print any errors
     } catch(const char * str){

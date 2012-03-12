@@ -14,6 +14,9 @@ using namespace std;
 
 #include "protocol.cpp"
 
+log_file = fopen("client.log","wb");
+trace_prefix = "Client";
+
 int main(void){
     srand ( time(NULL) );
 
@@ -105,8 +108,14 @@ int main(void){
             sendbuf(client_socket,sa_out,&client_num,szbuffer);
 
             // Perform a get request
-            if(!strcmp(direction,GET))      get(client_socket, sa_out, cusername, filename, client_num);
-            else if(!strcmp(direction,PUT)) put(client_socket, sa_out, cusername, filename, client_num);
+            if(!strcmp(direction,GET)){
+                trace_prefix = RECV;
+                get(client_socket, sa_out, cusername, filename, client_num);
+                
+            }else if(!strcmp(direction,PUT)){
+                trace_prefix = SEND;
+                put(client_socket, sa_out, cusername, filename, client_num);
+            }
 
         }else{
             throw "The method you requested does not exist, use get or put";

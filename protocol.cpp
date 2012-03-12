@@ -23,8 +23,14 @@ using namespace std;
 #define OK "OK"             // Expected response for successful transfers
 #define RAND "RAND"         // Indicates a random number being sent
 #define MISSING "NO"        // Expected response for failed transfers
+#define SEND "Sender"       // Sender prefix
+#define RECV "Receiver"     // Receiver prefix
 #define HEADER "%s\t%s\t%s" // Format string for headers
 #define TIMEOUT_USEC 300000 //time-out value
+#define TRACE 1
+
+FILE* log_file;
+char* trace_prefix;
 
 
 SOCKET open_port(int port){
@@ -77,19 +83,22 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
         bool mismatch = false;            // Checks if there is a packet mismatch
         char packetc;                     // Holds the packet number in character format
         int packeti;                      // Holds the packet number in int format
+        char trace_buffer[BUFFER_SIZE];   // Holds trace information
 
         FD_ZERO(&readfds);
         FD_SET(sock,&readfds);
 
         if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR) throw "Timer error!";
         else if(result > 0){
-            cout << "Receiving packet " << *packet_num << endl;
             memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
             if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                 throw "Recv failed";
             }else{
-                memset(control_buffer,0,sizeof(control_buffer));
+                // Trace the packet if necessary
+                sprintf(trace_buffer,"Received packet %d (%d bytes)",packet_num,ibytesrecv);
+                trace(trace_buffer);
 
+                memset(control_buffer,0,sizeof(control_buffer));
                 packetc = buffer[BUFFER_SIZE-1];
                 packeti = atoi(&packetc);
 
@@ -102,11 +111,13 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
                     throw "Send failed"; 
                 }else{
-                    cout << "Sent ack successfully" << endl;
                     if(!mismatch){
+                        // Trace the packet if necessary
+                        sprintf(trace_buffer,"Sent ack for packet %d",packet_num);
+                        trace(trace_buffer);
                         if(*packet_num == 1)        *packet_num = 0;
-                        else if(*packet_num == 2)   *packet_num = 3;
-                        else if(*packet_num == 3)   *packet_num = 2;
+                        else if(*packet_num == 2)   *packet_num = 3;    // Used in initial handshake
+                        else if(*packet_num == 3)   *packet_num = 2;    // Used in initial handshake
                         else                        *packet_num = 1;
                         return ibytesrecv;  // Return the amount of data received
                     }else{
@@ -119,7 +130,6 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
         }
     }catch(const char* str){
         if(allow_timeout){
-            cout << "Timing out..." << endl;
             return -1;
         }
         cout << str << " attempting recvbuf again... ERROR:" << WSAGetLastError() << endl;
@@ -139,32 +149,39 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
         int verify;                       // Verify the received packet id
-
-        cout << "Sending packet " << *packet_num << endl;
+        char trace_buffer[BUFFER_SIZE];   // Trace info buffer
 
         if(*packet_num == 1)        buffer[BUFFER_SIZE-1] = '1';
-        else if(*packet_num == 2)   buffer[BUFFER_SIZE-1] = '2';
-        else if(*packet_num == 3)   buffer[BUFFER_SIZE-1] = '3';
+        else if(*packet_num == 2)   buffer[BUFFER_SIZE-1] = '2';    // Used in initial handshake
+        else if(*packet_num == 3)   buffer[BUFFER_SIZE-1] = '3';    // Used in initial handshake
         else                        buffer[BUFFER_SIZE-1] = '0';
 
         if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR) throw "Send failed";
         else{
             FD_ZERO(&readfds);
             FD_SET(sock,&readfds);
-            cout << "Waiting on ack from peer for packet " << *packet_num << endl;
+            
             if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
                 throw "Timer error!";
             }else if(result > 0){
+
+                // Trace the packet if necessary
+                sprintf(trace_buffer,"Sent packet %d (%d bytes)",packet_num,ibytessent);
+                trace(trace_buffer);
+
                 memset(control_buffer,0,sizeof(control_buffer));
                 if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
                     sscanf(control_buffer,"%d",&verify);
                     if(*packet_num == verify){
-                        cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
+                        // Trace the packet if necessary
+                        sprintf(trace_buffer,"Received ack for packet %d",packet_num);
+                        trace(trace_buffer);
+
                         if(*packet_num == 1)        *packet_num = 0;
-                        else if(*packet_num == 2)   *packet_num = 3;
-                        else if(*packet_num == 3)   *packet_num = 2;
+                        else if(*packet_num == 2)   *packet_num = 3;    // Used in initial handshake
+                        else if(*packet_num == 3)   *packet_num = 2;    // Used in initial handshake
                         else                        *packet_num = 1;
                         memset(buffer,0,buffer_size);
                         return ibytessent;
@@ -181,7 +198,6 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         }
     }catch(const char* str){
         if(allow_timeout){
-            cout << "Timing out..." << endl;
             return -1;
         }
         cout << str << " attempting sendbuf again... ERROR:" << WSAGetLastError() << endl;
@@ -194,9 +210,17 @@ void prompt(const char* message, char*buffer){
     cin >> buffer;              // Record the input into the buffer
 }
 
+void trace(char* message){
+    if(TRACE){
+        fprintf(log_file,"%s: %s",trace_prefix,message);
+        memset(message,0,sizeof(message));
+    }
+}
+
 void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int packet_num){
 
     char szbuffer[BUFFER_SIZE];
+    char tracebuf[BUFFER_SIZE]; // for managing trace
 
     //host data types
     HOSTENT *hp;
@@ -213,8 +237,6 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int packet_
         //wait for reception of server response.
         recvbuf(s,sa,&packet_num,szbuffer); // Get the response from the server
         sscanf(szbuffer,"%s %d",response,&filesize);    // Extract file data
-
-        cout << "Peer packet is now " << packet_num << endl;
 
         cout << "Response " << response << " filesize " << filesize << endl;
 
