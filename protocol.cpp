@@ -136,7 +136,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
-        int verify;                       // Verify the received packet id
+        char* verify;                       // Verify the received packet id
         char verify_ack[2];               // Verify the ack response
 
         cout << "Sending packet " << *packet_num << endl;
@@ -156,18 +156,19 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
-                    sscanf(control_buffer,"%d %s",&verify,verify_ack);
-                    if(*packet_num == verify && !strcmp(verify_ack,OK)){
+                    sscanf(control_buffer,"%s %s",verify,verify_ack);
+                    int verifyi = atoi(&verify);
+                    if(*packet_num == verifyi && !strcmp(verify_ack,OK)){
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                         if(*packet_num == 1) *packet_num = 0;
                         else                 *packet_num = 1;
                         cout << "FLOPPED PACKET TO " << *packet_num << endl;
                         memset(buffer,0,buffer_size);
                         return ibytessent;
-                    }else if(verify > 1 || verify < 0){
+                    }else if(verifyi > 1 || verifyi < 0){
                         throw "Invalid verification data received";
                     }else{
-                        cout << "Ignoring packet, got " << control_buffer << " parse to " << verify << " and " << verify_ack << endl;
+                        cout << "Ignoring packet, got " << control_buffer << " parse to " << verifyi << " and " << verify_ack << endl;
                     }
                 }
             }else{
