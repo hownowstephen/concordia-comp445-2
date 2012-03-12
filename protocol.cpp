@@ -206,7 +206,8 @@ void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int lo
             // Send ack to start data transfer
             memset(szbuffer,0,BUFFER_SIZE);
             sprintf(szbuffer,"SEND");
-            //szbuffer[BUFFER_SIZE-1] = (char)local_packet;    // Append the packet identifier
+            szbuffer[BUFFER_SIZE-1] = (char)local_packet;    // Append the packet identifier
+            cout << "Sending: " << szbuffer << endl;
             sendbuf(s,sa,&local_packet,szbuffer); // Send an ACK
 
             int size = 0, count = 0;
@@ -274,7 +275,6 @@ void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int loc
             // Filesize headers
             sprintf(szbuffer,"%s %d",OK,filesize);
             szbuffer[BUFFER_SIZE-1] = (char)local_packet;    // Append the packet identifier
-
             sendbuf(s,sa,&local_packet,szbuffer);    // Send the filesize
             recvbuf(s,sa,&peer_packet,szbuffer);    // Wait for ack from client
 

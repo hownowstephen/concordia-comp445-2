@@ -70,8 +70,7 @@ int main(void){
             server_num = 0;
 
             // Perform a get request
-            if(!strcmp(direction,GET)) get(client_socket, &sa_out, cusername, filename, client_num, server_num);
-            // Perform a put request
+            if(!strcmp(direction,GET))      get(client_socket, &sa_out, cusername, filename, client_num, server_num);
             else if(!strcmp(direction,PUT)) put(client_socket, &sa_out, cusername, filename, client_num, server_num);
 
         }else{
