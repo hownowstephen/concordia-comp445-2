@@ -31,30 +31,24 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
         client_num = 1;
         // Receive a random number from the client
 
-        if(progress < 1){
-            if(recvbuf(server_socket,sa_out,&client_num,szbuffer,BUFFER_SIZE, true) < 0) continue;
-            else    progress = 1;
-            cout << "Received " << szbuffer << endl;
-            sscanf(szbuffer,"RAND %d",&received);
-        }
+        if(recvbuf(server_socket,sa_out,&client_num,szbuffer,BUFFER_SIZE, true) < 0 && progress < 1) continue;
+        else    progress = 1;
+        cout << "Received " << szbuffer << endl;
+        sscanf(szbuffer,"RAND %d",&received);
 
         server_num = 2;
-        if(progress < 2){
-            // Send acknowledgement to the client along with our random number
-            sprintf(szbuffer,"RAND %d %d",received,selected);
-            cout << "Sending " << szbuffer << endl;
-            if(sendbuf(server_socket, sa_out, &server_num, szbuffer,BUFFER_SIZE,true) < 0) continue;
-            else    progress = 2;
-        }
+        // Send acknowledgement to the client along with our random number
+        sprintf(szbuffer,"RAND %d %d",received,selected);
+        cout << "Sending " << szbuffer << endl;
+        if(sendbuf(server_socket, sa_out, &server_num, szbuffer,BUFFER_SIZE,true) < 0 && progress < 2) continue;
+        else    progress = 2;
 
         client_num = 3;
-        if(progress < 3){
-            // Finally wait for a response from the client with the number
-            if(recvbuf(server_socket,sa_out,&client_num,szbuffer,BUFFER_SIZE,true) < 0) continue;
-            else    progress = 3;
-            cout << "Received " << szbuffer << endl;
-            sscanf(szbuffer,"RAND %d",&verify);
-        }
+        // Finally wait for a response from the client with the number
+        if(recvbuf(server_socket,sa_out,&client_num,szbuffer,BUFFER_SIZE,true) < 0 && progress < 3) continue;
+        else    progress = 3;
+        cout << "Received " << szbuffer << endl;
+        sscanf(szbuffer,"RAND %d",&verify);
 
         if(progress == 3) break;
     }
