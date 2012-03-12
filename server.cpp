@@ -16,7 +16,7 @@ using namespace std;
 
 #include "protocol.cpp"
 
-bool handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
+void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     char szbuffer[BUFFER_SIZE]; // buffer object
     int server_num = 0;         // client packet tracer
