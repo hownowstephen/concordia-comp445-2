@@ -16,7 +16,8 @@ using namespace std;
 
 int main(void){
 
-    int packet_num = 0; // Client negotiates with packet zero from the outset
+    int client_num = 0; // Client packet number
+    int server_num = 0; // Server packet number
 
     //socket data types
     SOCKET client_socket;   // Client socket
@@ -63,12 +64,14 @@ int main(void){
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
             sendbuf(client_socket,sa_out,&packet_num,szbuffer);
 
-            packet_num = 0;
+            // TODO: Replace with proper 3-way handshake
+            client_num = 0;
+            server_num = 0;
 
             // Perform a get request
-            if(!strcmp(direction,GET)) get(client_socket, &sa_out, cusername, filename, packet_num);
+            if(!strcmp(direction,GET)) get(client_socket, &sa_out, cusername, filename, client_num, server_num);
             // Perform a put request
-            else if(!strcmp(direction,PUT)) put(client_socket, &sa_out, cusername, filename, packet_num);
+            else if(!strcmp(direction,PUT)) put(client_socket, &sa_out, cusername, filename, client_num, server_num);
 
         }else{
             throw "this protocol only supports get or put";
