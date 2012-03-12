@@ -115,7 +115,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }
             }
         }else{
-            return recvbuf(sock, sa, packet_num, buffer, buffer_size,allow_timeout);
+            throw "Result not possible";
         }
     }catch(const char* str){
         if(allow_timeout) return -1;
