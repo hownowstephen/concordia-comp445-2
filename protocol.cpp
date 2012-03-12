@@ -153,7 +153,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 }else{
                     // TODO: Verify the sequence number of this request
                     sscanf(control_buffer,"%d OK",&verify);
-                    cout << "Verification value: " << *verify << endl;
+                    cout << "Verification value: " << verify << endl;
                     if(*packet_num == verify){
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                         if(*packet_num)  *packet_num = 0;
