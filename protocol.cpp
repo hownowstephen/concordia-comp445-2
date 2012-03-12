@@ -183,7 +183,7 @@ void prompt(const char* message, char*buffer){
     cin >> buffer;              // Record the input into the buffer
 }
 
-void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_packet, int peer_packet){
+void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int packet_num){
 
     char szbuffer[BUFFER_SIZE];
 
@@ -200,10 +200,10 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_p
     try {
         cout << "Waiting for file headers" << endl;
         //wait for reception of server response.
-        recvbuf(s,sa,&peer_packet,szbuffer); // Get the response from the server
+        recvbuf(s,sa,&packet_num,szbuffer); // Get the response from the server
         sscanf(szbuffer,"%s %d",response,&filesize);    // Extract file data
 
-        cout << "Peer packet is now " << peer_packet << endl;
+        cout << "Peer packet is now " << packet_num << endl;
 
         cout << "Response " << response << " filesize " << filesize << endl;
 
@@ -218,11 +218,10 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_p
             while(count < filesize){
                 if(filesize - count >= BUFFER_SIZE) size = (sizeof(szbuffer) / sizeof(char)) - sizeof(char); // Read a full buffer
                 else                                size = ((filesize - count) / sizeof(char)) - sizeof(char);  // Read a shorter buffer
-                recvbuf(s,sa,&peer_packet,szbuffer);
+                recvbuf(s,sa,&packet_num,szbuffer);
                 fwrite(szbuffer,sizeof(char),size,recv_file);
                 count += sizeof(szbuffer);
                 cout << "Received " << count << " of " << filesize << " bytes" << endl;
-                cout << "Peer packet is now " << peer_packet << endl;
             }
 
             cout << "Finished receiving data" << endl;
@@ -241,7 +240,7 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_p
  }
 
 
-void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int local_packet, int peer_packet){
+void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int packet_num){
 
     char szbuffer[BUFFER_SIZE];
 
@@ -270,16 +269,14 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int local_pa
 
             // Filesize headers
             sprintf(szbuffer,"%s %d",OK,filesize);
-            sendbuf(s,sa,&local_packet,szbuffer);    // Send the filesize
-            cout << "local packet num is now " << local_packet << endl;
+            sendbuf(s,sa,&packet_num,szbuffer);    // Send the filesize
 
             int size = 0, sent = 0;
             // Loop through the file and stream in chunks based on the buffer size
             while ( !feof(send_file) ){
                 fread(szbuffer,1,BUFFER_SIZE-1,send_file);
-                cout << "Sending " << sizeof(szbuffer) << " bytes (packet " << local_packet << ")" << endl;
-                sendbuf(s,sa,&local_packet,szbuffer);
-                cout << "local packet num is now " << local_packet << endl;
+                cout << "Sending " << sizeof(szbuffer) << " bytes (packet " << packet_num << ")" << endl;
+                sendbuf(s,sa,&packet_num,szbuffer);
             }
 
             fclose(send_file);
@@ -291,7 +288,7 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int local_pa
             cout << "File does not exist, sending decline" << endl;
             // Send back a NO to the client to indicate that the file does not exist
             sprintf(szbuffer,"NO -1");
-            sendbuf(s,sa,&local_packet,szbuffer);
+            sendbuf(s,sa,&packet_num,szbuffer);
         }
     // Print out any errors
     } catch(const char* str){
