@@ -77,7 +77,7 @@ int main(void){
             sprintf(szbuffer,"RAND %d",received);
             sendbuf(server_socket, sa_out, &client_num, szbuffer);
 
-            if(received != recieved_verify){
+            if(received != verify){
                 cout << "Something went wrong in the initial handshake..." << endl;
                 continue;
             }

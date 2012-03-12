@@ -50,7 +50,7 @@ int main(void){
         while(1) {
 
             int selected = rand() % 256;
-            int received, received_verify;
+            int received, verify;
 
             // Receive a random number from the client
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
@@ -62,7 +62,7 @@ int main(void){
 
             // Finally wait for a response from the client with the number
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
-            sscanf(szbuffer,"RAND %d",received_verify);
+            sscanf(szbuffer,"RAND %d",verify);
 
             if(selected != recieved_verify){
                 cout << "Something went wrong in the initial handshake..." << endl;
