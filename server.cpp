@@ -16,15 +16,61 @@ using namespace std;
 
 #include "protocol.cpp"
 
+void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
+
+    char szbuffer[BUFFER_SIZE]; // buffer object
+    int server_num = client_num = 0;
+
+    int selected = rand() % 256;
+    int received, verify;
+
+    // Receive a random number from the client
+    recvbuf(server_socket,sa_out,&client_num,szbuffer);
+    cout << "Received " << szbuffer << endl;
+    sscanf(szbuffer,"RAND %d",&received);
+
+    // Send acknowledgement to the client along with our random number
+    sprintf(szbuffer,"RAND %d %d",received,selected);
+    cout << "Sending " << szbuffer << endl;
+    sendbuf(server_socket, sa_out, &server_num, szbuffer);
+
+    // Finally wait for a response from the client with the number
+    recvbuf(server_socket,sa_out,&client_num,szbuffer);
+    cout << "Received " << szbuffer << endl;
+    sscanf(szbuffer,"RAND %d",&verify);
+
+    if(selected != verify){
+        cout << "Something went wrong in the initial handshake..." << endl;
+        continue;
+    }
+
+    client_num = received & 0x1;
+    server_num = selected % 0x1;
+
+    cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
+
+    // Receive header data from the client
+    recvbuf(server_socket,sa_out,&client_num,szbuffer);
+
+    // Extract data from the headers
+    char cusername[128], filename[128], direction[3];
+    sscanf(szbuffer,HEADER,cusername,direction,filename);
+
+    // Print out the information
+    cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
+
+    // Respond to the client request
+    if(!strcmp(direction,GET))      put(server_socket, sa_out, PUT, filename, server_num, client_num);
+    else if(!strcmp(direction,PUT)) get(server_socket, sa_out, GET, filename, server_num, client_num);
+    else                            throw "Requested protocol does not exist";
+}
+
 int main(void){
     /* Main function, performs the listening loop for client connections */
     srand ( time(NULL) );
 
-    int server_num;         // Server packet identifier
-    int client_num;         // Client packet identifier
     SOCKET server_socket;       // Global listening socket
     SOCKADDR_IN sa_out;         // fill with router info
-    char szbuffer[BUFFER_SIZE]; // buffer object
     WSADATA wsadata;            // Winsock connection object
     char router[11];            // Store the name of the router
      
@@ -48,55 +94,7 @@ int main(void){
         sa_out = prepare_peer_connection(router, ROUTER_PORT1);
 
         // Server will block waiting for new client requests indefinitely
-        while(1) {
-
-            server_num = client_num = 0;
-
-
-            int selected = rand() % 256;
-            int received, verify;
-
-            // Receive a random number from the client
-            recvbuf(server_socket,sa_out,&client_num,szbuffer);
-            cout << "Received " << szbuffer << endl;
-            sscanf(szbuffer,"RAND %d",&received);
-
-            // Send acknowledgement to the client along with our random number
-            sprintf(szbuffer,"RAND %d %d",received,selected);
-            cout << "Sending " << szbuffer << endl;
-            sendbuf(server_socket, sa_out, &server_num, szbuffer);
-
-            // Finally wait for a response from the client with the number
-            recvbuf(server_socket,sa_out,&client_num,szbuffer);
-            cout << "Received " << szbuffer << endl;
-            sscanf(szbuffer,"RAND %d",&verify);
-
-            if(selected != verify){
-                cout << "Something went wrong in the initial handshake..." << endl;
-                continue;
-            }
-
-            client_num = received & 0x1;
-            server_num = selected % 0x1;
-
-            cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
-
-            // Receive header data from the client
-            recvbuf(server_socket,sa_out,&client_num,szbuffer);
-
-            // Extract data from the headers
-            char cusername[128], filename[128], direction[3];
-            sscanf(szbuffer,HEADER,cusername,direction,filename);
-
-            // Print out the information
-            cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
-
-            // Respond to the client request
-            if(!strcmp(direction,GET))      put(server_socket, sa_out, PUT, filename, server_num, client_num);
-            else if(!strcmp(direction,PUT)) get(server_socket, sa_out, GET, filename, server_num, client_num);
-            else                            throw "Requested protocol does not exist";
-
-        }
+        while(1)    handle_client(server_socket, sa_out);
 
     // Catch and print any errors
     } catch(const char * str){
