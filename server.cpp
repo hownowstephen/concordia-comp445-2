@@ -77,7 +77,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
     if(!strcmp(direction,GET)){
         TRACE_PREFIX = SEND;
         put(server_socket, sa_out, PUT, filename, client_num);
-    else if(!strcmp(direction,PUT)){
+    }else if(!strcmp(direction,PUT)){
         TRACE_PREFIX = RECV;
         get(server_socket, sa_out, GET, filename, client_num);
     }else   throw "Requested protocol does not exist";
