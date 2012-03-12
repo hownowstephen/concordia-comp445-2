@@ -66,8 +66,8 @@ int main(void){
             sendbuf(client_socket,sa_out,&client_num,szbuffer);
 
             // TODO: Replace with proper 3-way handshake
-            client_num = 0;
-            server_num = 0;
+            client_num = 1;
+            server_num = 1;
 
             // Perform a get request
             if(!strcmp(direction,GET))      get(client_socket, &sa_out, cusername, filename, client_num, server_num);

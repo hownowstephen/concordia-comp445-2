@@ -77,11 +77,10 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
         FD_ZERO(&readfds);
         FD_SET(sock,&readfds);
 
-        cout << "Receiving packet " << *packet_num << endl;
-
         if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
             throw "Timer error!";
         }else if(result > 0){
+            cout << "Receiving packet " << *packet_num << endl;
             memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
             if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                 throw "Recv failed";

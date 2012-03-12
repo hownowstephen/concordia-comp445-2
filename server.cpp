@@ -60,8 +60,8 @@ int main(void){
             cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
 
             // TODO: Proper three-way handshake
-            client_num = 0;
-            server_num = 0;
+            client_num = 1;
+            server_num = 1;
 
             // Respond to the client request
             if(!strcmp(direction,GET))      put(server_socket, &sa_out, PUT, filename, server_num, client_num);
