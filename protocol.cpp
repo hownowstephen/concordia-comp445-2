@@ -89,8 +89,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }else{
                     // TODO: Figure out what to do after the send on the recvbuf side
                     cout << "Sent ack successfully" << endl;
-                    if(packet_num)  packet_num = 0;
-                    else            packet_num = 1;
+                    if(packet_num)  *packet_num = 0;
+                    else            *packet_num = 1;
                     return ibytesrecv;  // Return the amount of data received
                 }
             }
@@ -133,8 +133,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     // TODO: Verify the sequence number of this request
                     cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                     memset(buffer,0,buffer_size);
-                    if(packet_num)  packet_num = 0;
-                    else            packet_num = 1;
+                    if(packet_num)  *packet_num = 0;
+                    else            *packet_num = 1;
                     return ibytessent; 
                 }
             }else{
@@ -262,7 +262,7 @@ void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int sta
             // Loop through the file and stream in chunks based on the buffer size
             while ( !feof(send_file) ){
                 fread(szbuffer,1,BUFFER_SIZE-1,send_file);
-                szbuffer[BUFFER_SIZE-1] = (char)*packet_num;    // Append the packet identifier
+                szbuffer[BUFFER_SIZE-1] = (char)packet_num;    // Append the packet identifier
                 cout << "Sending " << sizeof(szbuffer) << " bytes" << endl;
                 sendbuf(s,sa,&packet_num,szbuffer);
             }
