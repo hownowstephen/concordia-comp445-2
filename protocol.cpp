@@ -82,7 +82,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 throw "Recv failed";
             }else{
                 memset(control_buffer,0,sizeof(control_buffer));
-                sprintf(control_buffer,"%d %s",&packet_num,OK);
+                sprintf(control_buffer,"%d %s",*packet_num,OK);
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                     throw "Send failed"; 
