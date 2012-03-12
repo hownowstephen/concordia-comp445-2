@@ -48,9 +48,11 @@ SOCKET open_port(int port){
 }
 
 SOCKADDR_IN* prepare_peer_connection(char* hostname, int port){
-    SOCKADDR_IN* sa;
+    SOCKADDR_IN sa;
     HOSTENT *hp;
     if((hp=gethostbyname(hostname)) == NULL) throw "Could not determine a host address from supplied name";
+
+    cout << "Peer connection: " << hp->h_addr << ":" << port << endl;
 
     // Fill in port and address information
     memcpy(&sa.sin_addr,hp->h_addr,hp->h_length);
