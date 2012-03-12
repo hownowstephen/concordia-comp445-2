@@ -247,8 +247,6 @@ void put(SOCKET s, SOCKADDR_IN* sa, char * username, char* filename, int local, 
     int* local_packet = &local;
     int* peer_packet = &peer;
 
-    SOCKADDR_IN sa = *sa_ptr;
-
     char szbuffer[BUFFER_SIZE];
 
     char *buffer;
