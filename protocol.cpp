@@ -107,7 +107,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                         else             *packet_num = 1;
                         return ibytesrecv;  // Return the amount of data received
                     }else{
-                        return recvbuf(sock,sa,packet_num,buffer,buffer_size);
+                        //return recvbuf(sock,sa,packet_num,buffer,buffer_size);
+                        return 0;
                     }
                 }
             }
@@ -158,7 +159,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 }
             }else{
                 // Otherwise re-initiate the process
-                return sendbuf(sock, sa, packet_num, buffer, buffer_size);
+                //return sendbuf(sock, sa, packet_num, buffer, buffer_size);
+                return 0;
             }
         }
     }catch(const char* str){
