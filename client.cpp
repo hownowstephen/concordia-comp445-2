@@ -68,7 +68,7 @@ int main(void){
 
             while(1){
 
-                client_num = 1;
+                client_num = 2;
                 // Send acknowledgement to the client along with our random number
                 sprintf(szbuffer,"RAND %d",selected);
                 cout << "Sending " << szbuffer << endl;
