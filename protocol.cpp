@@ -96,6 +96,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 if(packeti != *packet_num){
                     cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
                     mismatch = true;
+                    if(packetc == '1') packetc = '0';
+                    else               packetc = '1';
                 }
                 control_buffer[BUFFER_SIZE-1] = packetc;
                 cout << "Sending acknowledgment message " << control_buffer << endl;
