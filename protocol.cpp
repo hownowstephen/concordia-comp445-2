@@ -106,8 +106,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }else{
                     cout << "Sent ack successfully" << endl;
                     if(!mismatch){
-                        if(*packet_num == 1) *packet_num = 0;
-                        else                 *packet_num = 1;
+                        if(*packet_num) packet_num = 0;
+                        else            packet_num = 1;
                         return ibytesrecv;  // Return the amount of data received
                     }else{
                         throw "Mismatch";
