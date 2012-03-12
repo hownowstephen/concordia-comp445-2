@@ -69,10 +69,7 @@ int main(void){
                 sprintf(szbuffer,"RAND %d",selected);
                 cout << "Sending " << szbuffer << endl;
                 if(sendbuf(client_socket, sa_out, &client_num, szbuffer,BUFFER_SIZE,true) < 0) continue;
-                break;
-            }
-
-            while(1){
+                
                 // Finally wait for a response from the client with the number
                 if(recvbuf(client_socket,sa_out,&server_num,szbuffer,BUFFER_SIZE,true) < 0) continue;
                 cout << "Received " << szbuffer << endl;

@@ -31,9 +31,6 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
         cout << "Received " << szbuffer << endl;
         sscanf(szbuffer,"RAND %d",&received);
         break;
-    }
-
-    while(1){
 
         // Send acknowledgement to the client along with our random number
         sprintf(szbuffer,"RAND %d %d",received,selected);
