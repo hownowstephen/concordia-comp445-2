@@ -62,8 +62,8 @@ int main(void){
 
             // Send client headers
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
-            szbuffer[BUFFER_SIZE-1] = (char)local_packet;    // Append the packet identifier
-            sendbuf(client_socket,sa_out,&local_packet,szbuffer);
+            szbuffer[BUFFER_SIZE-1] = (char)client_num;    // Append the packet identifier
+            sendbuf(client_socket,sa_out,&client_num,szbuffer);
 
             // TODO: Replace with proper 3-way handshake
             client_num = 0;
