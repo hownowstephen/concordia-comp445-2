@@ -63,7 +63,7 @@ SOCKADDR_IN prepare_peer_connection(char* hostname, int port){
     return sa;
 }
 
-int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buffer_size=BUFFER_SIZE, bool allow_timeout=false){
+int recvbuf(SOCKET sock, SOCKADDR_IN sa, int& packet_num, char* buffer, int buffer_size=BUFFER_SIZE, bool allow_timeout=false){
     try{
         int ibytesrecv = 0;               // Number of bytes received
         int ibytessent = 0;               // Number of bytes sent
@@ -106,7 +106,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }else{
                     cout << "Sent ack successfully" << endl;
                     if(!mismatch){
-                        packet_num = !*packet_num;
+                        packet_num = (int)!packet_num;
                         return ibytesrecv;  // Return the amount of data received
                     }else{
                         throw "Mismatch";
@@ -123,7 +123,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
     }
 }
 
-int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffer_size=BUFFER_SIZE, bool allow_timeout=false){
+int sendbuf(SOCKET sock, SOCKADDR_IN sa, int& packet_num, char* buffer,int buffer_size=BUFFER_SIZE, bool allow_timeout=false){
     try{
         int ibytesrecv = 0;               // Number of bytes received
         int ibytessent = 0;               // Number of bytes sent
@@ -157,7 +157,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     sscanf(control_buffer,"%d%s",&verify,verify_ack);
                     if(*packet_num == verify && verify_ack == OK){
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
-                        packet_num  = !*packet_num;
+                        packet_num  = (int)!packet_num;
                         memset(buffer,0,buffer_size);
                         return ibytessent;
                     }else if(verify > 1 || verify < 0){
