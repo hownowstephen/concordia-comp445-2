@@ -81,8 +81,8 @@ int main(void){
             cout << "Sending " << szbuffer << endl;
             sendbuf(client_socket, sa_out, &client_num, szbuffer);
 
-            client_num = received & 0x1;
-            server_num = selected % 0x1;
+            client_num = selected & 0x1;
+            server_num = received % 0x1;
 
             cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
 
