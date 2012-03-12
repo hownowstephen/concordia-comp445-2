@@ -75,6 +75,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
         FD_ZERO(&readfds);
         FD_SET(sock,&readfds);
 
+        cout << "Receiving packet " << *packet_num << endl;
+
         if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
             throw "Timer error!";
         }else if(result > 0){
@@ -86,7 +88,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 if(((int)buffer[BUFFER_SIZE-1] == *packet_num)){
                     sprintf(control_buffer,"%d %s",buffer[BUFFER_SIZE-1],OK);
                 }else{
-                    cout << "Packet mismatch, discarding packet details" << endl;
+                    cout << "Packet mismatch, received packet " << (int)buffer[BUFFER_SIZE-1] << ", discarding" << endl;
                     sprintf(control_buffer,"%d %s",(int)!*packet_num,OK);
                     mismatch = true;
                 }
@@ -125,13 +127,15 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
 
+        cout << "Sending packet " << *packet_num << endl;
+
         if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
             throw "Send failed"; 
         }else{
 
             FD_ZERO(&readfds);
             FD_SET(sock,&readfds);
-            cout << "Waiting on ack from peer" << endl;
+            cout << "Waiting on ack from peer for packet " << *packet_num << endl;
             // TODO: if anything fails, re-run sendbuf
             if((result=select(1,&readfds,NULL,NULL,tp))==SOCKET_ERROR){
                 throw "Timer error!";
