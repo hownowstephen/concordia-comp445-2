@@ -39,7 +39,7 @@ void set_trace(FILE* log, char* prefix){
 
 void trace(char* message){
     if(TRACE){
-        fprintf(logfile,"%s: %s",prefix,message);
+        fprintf(logfile,"%s: %s",trace_prefix,message);
         memset(message,0,sizeof(message));
     }
 }
