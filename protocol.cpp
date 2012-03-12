@@ -24,6 +24,8 @@ using namespace std;
 #define HEADER "%s\t%s\t%s" // Format string for headers
 #define TIMEOUT_USEC 300000 //time-out value
 
+srand((unsigned)time(NULL)); 
+
 
 SOCKET open_port(int port){
     SOCKET sock;      // Define the socket to return

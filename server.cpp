@@ -75,13 +75,10 @@ int main(void){
             client_num = received & 0x1;
             server_num = selected % 0x1;
 
+            cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
+
             // Receive header data from the client
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
-
-            client_num = received & 0x1;
-            server_num = selected & 0x1;
-
-            cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
 
             // Extract data from the headers
             char cusername[128], filename[128], direction[3];

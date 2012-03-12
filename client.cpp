@@ -89,10 +89,6 @@ int main(void){
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
             sendbuf(client_socket,sa_out,&client_num,szbuffer);
 
-            // TODO: Replace with proper 3-way handshake
-            client_num = 0;
-            server_num = 0;
-
             // Perform a get request
             if(!strcmp(direction,GET))      get(client_socket, sa_out, cusername, filename, client_num, server_num);
             else if(!strcmp(direction,PUT)) put(client_socket, sa_out, cusername, filename, server_num, client_num);
