@@ -128,6 +128,8 @@ int main(void){
         cerr << str << WSAGetLastError() << endl;
     }
 
+    fclose(tracefile);
+
     //close the client socket and clean up
     closesocket(client_socket);
     WSACleanup();  
