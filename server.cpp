@@ -64,12 +64,12 @@ int main(void){
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
             sscanf(szbuffer,"RAND %d",verify);
 
-            if(selected != recieved_verify){
+            if(selected != verify){
                 cout << "Something went wrong in the initial handshake..." << endl;
                 continue;
             }
 
-            client_num = recieved & 0x1;
+            client_num = received & 0x1;
             server_num = selected % 0x1;
 
             // Receive header data from the client
