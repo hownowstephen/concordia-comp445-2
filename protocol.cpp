@@ -158,28 +158,11 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     // TODO: Verify the sequence number of this request
                     cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                     sscanf(control_buffer,"%d OK",&verify);
-
                     if(*packet_num == verify){
                         if(*packet_num)  *packet_num = 0;
                         else             *packet_num = 1;
                         memset(buffer,0,buffer_size);
-                        return ibytessent; 
-                    }else{
-                        cout << "Received ack for wrong packet, ignoring" << endl;
-                        memset(control_buffer,0,buffer_size);
-                        if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
-                            throw "Ack recv failed";
-                        }else{
-                            sscanf(control_buffer,"%d OK",&verify);
-                            if(*packet_num == verify){
-                                if(*packet_num)  *packet_num = 0;
-                                else             *packet_num = 1;
-                                memset(buffer,0,buffer_size);
-                                return ibytessent; 
-                            }else{
-                                throw "No ack outstanding";
-                            }
-                        }
+                        return ibytessent;
                     }
                 }
             }else{
