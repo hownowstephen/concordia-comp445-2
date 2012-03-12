@@ -37,7 +37,7 @@ void set_trace(FILE* log, char* prefix){
     trace_prefix = prefix;
 }
 
-void trace(char* message){
+void ftrace(char* message){
     if(TRACE){
         fprintf(logfile,"%s: %s\n",trace_prefix,message);
         memset(message,0,sizeof(message));
@@ -107,8 +107,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 throw "Recv failed";
             }else{
                 // Trace the packet if necessary
-                sprintf(trace_buffer,"Received packet %d (%d bytes)",packet_num,ibytesrecv);
-                trace(trace_buffer);
+                sprintf(trace_buffer,"Received packet %d (%d bytes)",*packet_num,ibytesrecv);
+                ftrace(trace_buffer);
 
                 memset(control_buffer,0,sizeof(control_buffer));
                 packetc = buffer[BUFFER_SIZE-1];
@@ -124,8 +124,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }else{
                     if(!mismatch){
                         // Trace the packet if necessary
-                        sprintf(trace_buffer,"Sent ack for packet *%d",packet_num);
-                        trace(trace_buffer);
+                        sprintf(trace_buffer,"Sent ack for packet %d",*packet_num);
+                        ftrace(trace_buffer);
                         if(*packet_num == 1)        *packet_num = 0;
                         else if(*packet_num == 2)   *packet_num = 3;    // Used in initial handshake
                         else if(*packet_num == 3)   *packet_num = 2;    // Used in initial handshake
@@ -178,7 +178,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
 
                 // Trace the packet if necessary
                 sprintf(trace_buffer,"Sent packet %d (%d bytes)",*packet_num,ibytessent);
-                trace(trace_buffer);
+                ftrace(trace_buffer);
 
                 memset(control_buffer,0,sizeof(control_buffer));
                 if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
@@ -188,7 +188,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     if(*packet_num == verify){
                         // Trace the packet if necessary
                         sprintf(trace_buffer,"Received ack for packet %d",*packet_num);
-                        trace(trace_buffer);
+                        ftrace(trace_buffer);
 
                         if(*packet_num == 1)        *packet_num = 0;
                         else if(*packet_num == 2)   *packet_num = 3;    // Used in initial handshake
