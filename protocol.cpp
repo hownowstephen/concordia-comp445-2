@@ -174,10 +174,8 @@ void prompt(const char* message, char*buffer){
 
 void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int local, int peer){
 
-    int* local_packet, peer_packet;
-
-    *local_packet = local;
-    *peer_packet = peer;
+    int* local_packet = &local;
+    int* peer_packet = &peer;
 
     SOCKADDR_IN sa = *sa_ptr;
 
@@ -248,10 +246,8 @@ void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int lo
 
 void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int local, int peer){
 
-    int* local_packet, peer_packet;
-
-    *local_packet = local;
-    *peer_packet = peer;
+    int* local_packet = &local;
+    int* peer_packet = &peer;
 
     SOCKADDR_IN sa = *sa_ptr;
 
