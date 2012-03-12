@@ -93,16 +93,13 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 packetc = buffer[BUFFER_SIZE-1];
                 packeti = atoi(&packetc);
 
-                char* packid;
-
                 if(packeti == *packet_num){
-                    itoa(packeti,packid,2);
+                    packid = packetc;
                 }else{
                     cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
-                    itoa((int)!packeti,packid,2);
                     mismatch = true;
                 }
-                buffer[BUFFER_SIZE-1] = packid[0];
+                control_buffer[BUFFER_SIZE-1] = packid[0];
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
                     throw "Send failed"; 
