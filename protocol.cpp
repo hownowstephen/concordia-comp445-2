@@ -136,6 +136,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
 
         cout << "Sending packet " << *packet_num << endl;
 
+        itoa(*packet_num, buffer[BUFFER_SIZE-1],2); // Set the packet identifier
+
         if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
             throw "Send failed"; 
         }else{
@@ -205,7 +207,6 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_p
             // Send ack to start data transfer
             memset(szbuffer,0,BUFFER_SIZE);
             sprintf(szbuffer,"SEND");
-            memset(szbuffer+BUFFER_SIZE-1,local_packet,1);    // Append the packet identifier
             sendbuf(s,sa,&local_packet,szbuffer); // Send an ACK
 
             int size = 0, count = 0;
@@ -227,7 +228,6 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_p
             // Clear the buffer and send an ack to the server to confirm receipt
             memset(szbuffer,0,BUFFER_SIZE);
             sprintf(szbuffer,"OK");
-            memset(szbuffer+BUFFER_SIZE-1,local_packet,1);    // Append the packet identifier
             sendbuf(s,sa,&local_packet,szbuffer);    // Send confirmation of receipt
 
             cout << "Completed transfer of " << filename << endl;
@@ -270,7 +270,6 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int local_pa
 
             // Filesize headers
             sprintf(szbuffer,"%s %d",OK,filesize);
-            memset(szbuffer+BUFFER_SIZE-1,local_packet,1);    // Append the packet identifier
             sendbuf(s,sa,&local_packet,szbuffer);    // Send the filesize
             recvbuf(s,sa,&peer_packet,szbuffer);    // Wait for ack from client
 
@@ -278,7 +277,6 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int local_pa
             // Loop through the file and stream in chunks based on the buffer size
             while ( !feof(send_file) ){
                 fread(szbuffer,1,BUFFER_SIZE-1,send_file);
-                memset(szbuffer+BUFFER_SIZE-1,local_packet,1);    // Append the packet identifier
                 cout << "Sending " << sizeof(szbuffer) << " bytes (packet " << local_packet << ")" << endl;
                 sendbuf(s,sa,&local_packet,szbuffer);
             }
@@ -293,7 +291,6 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int local_pa
             cout << "File does not exist, sending decline" << endl;
             // Send back a NO to the client to indicate that the file does not exist
             sprintf(szbuffer,"NO -1");
-            memset(szbuffer+BUFFER_SIZE-1,local_packet,1);    // Append the packet identifier
             sendbuf(s,sa,&local_packet,szbuffer);
         }
     // Print out any errors
