@@ -107,8 +107,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                         else             *packet_num = 1;
                         return ibytesrecv;  // Return the amount of data received
                     }else{
-                        //return recvbuf(sock,sa,packet_num,buffer,buffer_size);
-                        return 0;
+                        return recvbuf(sock,sa,packet_num,buffer,buffer_size);
                     }
                 }
             }
@@ -116,7 +115,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
             return recvbuf(sock, sa, packet_num, buffer, buffer_size);
         }
     }catch(const char* str){
-        cout << str << " attempting recvbuf again..." << endl;
+        cout << str << " attempting recvbuf again... (" << WSAGetLastError() << ")" << endl;
         return recvbuf(sock,sa,packet_num,buffer,buffer_size);
     }
 }
@@ -159,12 +158,11 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 }
             }else{
                 // Otherwise re-initiate the process
-                //return sendbuf(sock, sa, packet_num, buffer, buffer_size);
-                return 0;
+                return sendbuf(sock, sa, packet_num, buffer, buffer_size);
             }
         }
     }catch(const char* str){
-        cout << str << " attempting sendbuf again..." << endl;
+        cout << str << " attempting sendbuf again... (" << WSAGetLastError() << ")" << endl;
         return sendbuf(sock,sa,packet_num,buffer,buffer_size);
     }
 }
