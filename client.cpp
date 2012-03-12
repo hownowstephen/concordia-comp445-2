@@ -60,9 +60,11 @@ int main(void){
             // Retrieve the local user name
             GetUserName(cusername,&dwusername);
 
+            client_num = 0;
+
             // Send client headers
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
-            sendbuf(client_socket,sa_out,0,szbuffer);
+            sendbuf(client_socket,sa_out,&client_num,szbuffer);
 
             // TODO: Replace with proper 3-way handshake
             client_num = 0;

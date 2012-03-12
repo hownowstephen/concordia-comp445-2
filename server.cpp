@@ -49,8 +49,10 @@ int main(void){
         // Server will block waiting for new client requests indefinitely
         while(1) {
 
+            client_num = 0;
+
             // Receive header data from the client
-            recvbuf(server_socket,sa_out,0,szbuffer);
+            recvbuf(server_socket,sa_out,&client_num,szbuffer);
 
             // Extract data from the headers
             char cusername[128], filename[128], direction[3];
