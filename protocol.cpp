@@ -160,8 +160,6 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                         else             *packet_num = 1;
                         memset(buffer,0,buffer_size);
                         return ibytessent;
-                    }else{
-                        throw "Invalid ack received";
                     }
                 }
             }else{
