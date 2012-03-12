@@ -146,7 +146,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN* sa, int* packet_num, char* buffer,int buff
                 throw "Timer error!";
             }else if(result > 0){
                 memset(control_buffer,0,sizeof(control_buffer));
-                if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*&sa, &from)) == SOCKET_ERROR){
+                if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
                     // TODO: Verify the sequence number of this request
