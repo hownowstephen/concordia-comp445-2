@@ -22,7 +22,7 @@ int main(void){
     int server_num = 0;         // Server packet identifier
     int client_num = 0;         // Client packet identifier
     SOCKET server_socket;       // Global listening socket
-    SOCKADDR_IN *sa_out;         // fill with router info
+    SOCKADDR_IN sa_out;         // fill with router info
     char szbuffer[BUFFER_SIZE]; // buffer object
     WSADATA wsadata;            // Winsock connection object
     char router[11];            // Store the name of the router

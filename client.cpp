@@ -21,7 +21,7 @@ int main(void){
 
     //socket data types
     SOCKET client_socket;   // Client socket
-    SOCKADDR_IN* sa_out;      // fill with server info, IP, port
+    SOCKADDR_IN sa_out;      // fill with server info, IP, port
 
     char szbuffer[BUFFER_SIZE]; // Buffer
 
