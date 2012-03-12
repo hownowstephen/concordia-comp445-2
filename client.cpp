@@ -72,13 +72,13 @@ int main(void){
                 // Send acknowledgement to the client along with our random number
                 sprintf(szbuffer,"RAND %d",selected);
                 cout << "Sending " << szbuffer << endl;
-                if(sendbuf(client_socket, sa_out, &client_num, szbuffer,BUFFER_SIZE,true) < 0){
+                if(sendbuf(client_socket, sa_out, &client_num, szbuffer, BUFFER_SIZE, true) < 0){
                 if(progress < 1) continue;
                 }else progress = 1;
 
                 server_num = 1;
                 // Finally wait for a response from the client with the number
-                if(recvbuf(client_socket,sa_out,&server_num,szbuffer,BUFFER_SIZE,true) < 0){
+                if(recvbuf(client_socket, sa_out, &server_num, szbuffer, BUFFER_SIZE, true) < 0){
                 if(progress < 2) continue;
                 }else progress = 2;
                 cout << "Received " << szbuffer << endl;
@@ -88,7 +88,7 @@ int main(void){
                 // Send acknowledgement to the client along with our random number
                 sprintf(szbuffer,"RAND %d",received);
                 cout << "Sending " << szbuffer << endl;
-                if(sendbuf(client_socket, sa_out, &client_num, szbuffer,BUFFER_SIZE,true) < 0){
+                if(sendbuf(client_socket, sa_out, &client_num, szbuffer, BUFFER_SIZE, true) < 0){
                 if(progress < 3) continue;
                 }else progress = 3;
 
