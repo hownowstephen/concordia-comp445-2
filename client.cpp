@@ -65,22 +65,17 @@ int main(void){
 
             // Send acknowledgement to the client along with our random number
             sprintf(szbuffer,"RAND %d",selected);
-            sendbuf(server_socket, sa_out, &client_num, szbuffer);
+            sendbuf(client_socket, sa_out, &client_num, szbuffer);
 
             // Finally wait for a response from the client with the number
-            recvbuf(server_socket,sa_out,&client_num,szbuffer);
+            recvbuf(client_socket,sa_out,&client_num,szbuffer);
             sscanf(szbuffer,"RAND %d %d",verify,received);
 
             if(verify != selected)  throw "An unexpected error occurred in the initial handshake";
 
             // Send acknowledgement to the client along with our random number
             sprintf(szbuffer,"RAND %d",received);
-            sendbuf(server_socket, sa_out, &client_num, szbuffer);
-
-            if(received != verify){
-                cout << "Something went wrong in the initial handshake..." << endl;
-                continue;
-            }
+            sendbuf(client_socket, sa_out, &client_num, szbuffer);
 
             client_num = recieved & 0x1;
             server_num = selected % 0x1;
