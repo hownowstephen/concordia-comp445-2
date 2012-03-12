@@ -16,7 +16,7 @@ using namespace std;
 
 #include "protocol.cpp"
 
-set_trace(fopen("server.log","wb"),"Server");
+FILE* tracefile = fopen("server.log","wb");
 
 void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
@@ -75,15 +75,16 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     // Respond to the client request
     if(!strcmp(direction,GET)){
-        trace_prefix = SEND;
+        set_trace(tracefile,SEND);
         put(server_socket, sa_out, PUT, filename, client_num);
     }else if(!strcmp(direction,PUT)){
-        trace_prefix = RECV;
+        set_trace(tracefile,RECV);
         get(server_socket, sa_out, GET, filename, client_num);
     }else   throw "Requested protocol does not exist";
 }
 
 int main(void){
+    set_trace(tracefile,"Server");
     /* Main function, performs the listening loop for client connections */
     srand ( time(NULL) );
 
@@ -113,7 +114,7 @@ int main(void){
 
         // Server will block waiting for new client requests indefinitely
         while(1){
-            trace_prefix = "Server";
+            set_trace(tracefile,"Server");
             handle_client(server_socket, sa_out);
         }
 

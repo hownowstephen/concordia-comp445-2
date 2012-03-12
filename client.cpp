@@ -14,9 +14,10 @@ using namespace std;
 
 #include "protocol.cpp"
 
-set_trace(fopen("client.log","wb"),"Client");
+FILE* tracefile = fopen("client.log","wb");
 
 int main(void){
+    set_trace(tracefile,"Client");
     srand ( time(NULL) );
 
     //socket data types
@@ -108,11 +109,11 @@ int main(void){
 
             // Perform a get request
             if(!strcmp(direction,GET)){
-                trace_prefix = RECV;
+                set_trace(tracefile,RECV);
                 get(client_socket, sa_out, cusername, filename, client_num);
                 
             }else if(!strcmp(direction,PUT)){
-                trace_prefix = SEND;
+                set_trace(tracefile,SEND);
                 put(client_socket, sa_out, cusername, filename, client_num);
             }
 
