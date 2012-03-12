@@ -64,7 +64,7 @@ int main(void){
             int selected = rand() % 256;
             int received, verify;
 
-            // Send acknowledgement to the client along with our random number
+            /* Send acknowledgement to the client along with our random number
             sprintf(szbuffer,"RAND %d",selected);
             cout << "Sending " << szbuffer << endl;
             sendbuf(client_socket, sa_out, &client_num, szbuffer);
@@ -82,7 +82,10 @@ int main(void){
             sendbuf(client_socket, sa_out, &client_num, szbuffer);
 
             client_num = selected & 0x1;
-            server_num = received % 0x1;
+            server_num = received % 0x1;*/
+
+            client_num = 0;
+            server_num = 1;
 
             cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
 

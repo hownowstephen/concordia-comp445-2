@@ -56,7 +56,7 @@ int main(void){
             int selected = rand() % 256;
             int received, verify;
 
-            // Receive a random number from the client
+            /*// Receive a random number from the client
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
             cout << "Received " << szbuffer << endl;
             sscanf(szbuffer,"RAND %d",&received);
@@ -77,7 +77,10 @@ int main(void){
             }
 
             client_num = received & 0x1;
-            server_num = selected % 0x1;
+            server_num = selected % 0x1;*/
+
+            client_num = 0;
+            server_num = 1;
 
             cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
 
