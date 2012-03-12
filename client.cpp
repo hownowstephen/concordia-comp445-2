@@ -14,8 +14,7 @@ using namespace std;
 
 #include "protocol.cpp"
 
-FILE* logfile = fopen("client.log","wb");
-trace_prefix = "Client";
+set_trace(fopen("client.log","wb"),"Client");
 
 int main(void){
     srand ( time(NULL) );

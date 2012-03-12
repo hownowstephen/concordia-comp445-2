@@ -32,6 +32,11 @@ using namespace std;
 FILE* logfile;
 char* trace_prefix;
 
+void set_trace(FILE* log, char* prefix){
+    logfile = log;
+    trace_prefix = prefix;
+}
+
 void trace(char* message, FILE* logfile, char* prefix){
     if(TRACE){
         fprintf(logfile,"%s: %s",prefix,message);
