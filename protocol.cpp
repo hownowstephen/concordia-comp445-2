@@ -39,7 +39,7 @@ void set_trace(FILE* log, char* prefix){
 
 void trace(char* message){
     if(TRACE){
-        fprintf(logfile,"%s: %s",trace_prefix,message);
+        fprintf(logfile,"%s: %s\n",trace_prefix,message);
         memset(message,0,sizeof(message));
     }
 }
@@ -119,13 +119,12 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                     mismatch = true;
                 }
                 sprintf(control_buffer,"%d",packeti);
-                cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
                     throw "Send failed"; 
                 }else{
                     if(!mismatch){
                         // Trace the packet if necessary
-                        sprintf(trace_buffer,"Sent ack for packet %d",packet_num);
+                        sprintf(trace_buffer,"Sent ack for packet *%d",packet_num);
                         trace(trace_buffer);
                         if(*packet_num == 1)        *packet_num = 0;
                         else if(*packet_num == 2)   *packet_num = 3;    // Used in initial handshake
@@ -178,7 +177,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
             }else if(result > 0){
 
                 // Trace the packet if necessary
-                sprintf(trace_buffer,"Sent packet %d (%d bytes)",packet_num,ibytessent);
+                sprintf(trace_buffer,"Sent packet %d (%d bytes)",*packet_num,ibytessent);
                 trace(trace_buffer);
 
                 memset(control_buffer,0,sizeof(control_buffer));
@@ -188,7 +187,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     sscanf(control_buffer,"%d",&verify);
                     if(*packet_num == verify){
                         // Trace the packet if necessary
-                        sprintf(trace_buffer,"Received ack for packet %d",packet_num);
+                        sprintf(trace_buffer,"Received ack for packet %d",*packet_num);
                         trace(trace_buffer);
 
                         if(*packet_num == 1)        *packet_num = 0;
