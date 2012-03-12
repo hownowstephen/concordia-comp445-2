@@ -14,10 +14,10 @@
 
 using namespace std;
 
-FILE* LOGFILE = fopen("server.log","wb");
-char* TRACE_PREFIX = "Server";
-
 #include "protocol.cpp"
+
+FILE* logfile = fopen("server.log","wb");
+char* trace_prefix = "Server";
 
 void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 

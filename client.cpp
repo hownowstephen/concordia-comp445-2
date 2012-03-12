@@ -12,10 +12,10 @@
 
 using namespace std;
 
-FILE* LOGFILE = fopen("client.log","wb");
-TRACE_PREFIX = "Client";
-
 #include "protocol.cpp"
+
+FILE* logfile = fopen("client.log","wb");
+char* trace_prefix = "Client";
 
 int main(void){
     srand ( time(NULL) );
