@@ -29,8 +29,8 @@ using namespace std;
 #define TIMEOUT_USEC 300000 //time-out value
 #define TRACE 1
 
-FILE* log_file;
-char* trace_prefix;
+FILE* LOGFILE;
+char* TRACE_PREFIX;
 
 
 SOCKET open_port(int port){
@@ -212,7 +212,7 @@ void prompt(const char* message, char*buffer){
 
 void trace(char* message){
     if(TRACE){
-        fprintf(log_file,"%s: %s",trace_prefix,message);
+        fprintf(LOGFILE,"%s: %s",TRACE_PREFIX,message);
         memset(message,0,sizeof(message));
     }
 }

@@ -14,8 +14,8 @@ using namespace std;
 
 #include "protocol.cpp"
 
-log_file = fopen("client.log","wb");
-trace_prefix = "Client";
+LOGFILE = fopen("client.log","wb");
+TRACE_PREFIX = "Client";
 
 int main(void){
     srand ( time(NULL) );
@@ -109,11 +109,11 @@ int main(void){
 
             // Perform a get request
             if(!strcmp(direction,GET)){
-                trace_prefix = RECV;
+                TRACE_PREFIX = RECV;
                 get(client_socket, sa_out, cusername, filename, client_num);
                 
             }else if(!strcmp(direction,PUT)){
-                trace_prefix = SEND;
+                TRACE_PREFIX = SEND;
                 put(client_socket, sa_out, cusername, filename, client_num);
             }
 

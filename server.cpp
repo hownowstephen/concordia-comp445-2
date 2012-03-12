@@ -16,7 +16,7 @@ using namespace std;
 
 #include "protocol.cpp"
 
-log_file = fopen("server.log","wb");
+LOGFILE = fopen("server.log","wb");
 
 void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
@@ -75,10 +75,10 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     // Respond to the client request
     if(!strcmp(direction,GET)){
-        trace_prefix = SEND;
+        TRACE_PREFIX = SEND;
         put(server_socket, sa_out, PUT, filename, client_num);
     else if(!strcmp(direction,PUT)){
-        trace_prefix = RECV;
+        TRACE_PREFIX = RECV;
         get(server_socket, sa_out, GET, filename, client_num);
     }else   throw "Requested protocol does not exist";
 }
@@ -113,7 +113,7 @@ int main(void){
 
         // Server will block waiting for new client requests indefinitely
         while(1){
-            trace_prefix = "Server";
+            TRACE_PREFIX = "Server";
             handle_client(server_socket, sa_out);
         }
 
