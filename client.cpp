@@ -81,7 +81,7 @@ int main(void){
                 if(progress < 2){
                     // Finally wait for a response from the client with the number
                     if(recvbuf(client_socket,sa_out,&server_num,szbuffer,BUFFER_SIZE,true) < 0) continue;
-                    else progress = 2
+                    else progress = 2;
                     cout << "Received " << szbuffer << endl;
                     sscanf(szbuffer,"RAND %d %d",&verify,&received);
                 }
