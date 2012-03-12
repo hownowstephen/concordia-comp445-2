@@ -62,12 +62,12 @@ int main(void){
 
             // Send client headers
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
-            szbuffer[BUFFER_SIZE-1] = (char)client_num;    // Append the packet identifier
+            memset(szbuffer+BUFFER_SIZE-1,local_packet,1);    // Append the packet identifier
             sendbuf(client_socket,sa_out,&client_num,szbuffer);
 
             // TODO: Replace with proper 3-way handshake
-            client_num = 1;
-            server_num = 1;
+            client_num = 0;
+            server_num = 0;
 
             // Perform a get request
             if(!strcmp(direction,GET))      get(client_socket, &sa_out, cusername, filename, client_num, server_num);
