@@ -20,8 +20,8 @@ int main(void){
     /* Main function, performs the listening loop for client connections */
     srand ( time(NULL) );
 
-    int server_num = 0;         // Server packet identifier
-    int client_num = 0;         // Client packet identifier
+    int server_num;         // Server packet identifier
+    int client_num;         // Client packet identifier
     SOCKET server_socket;       // Global listening socket
     SOCKADDR_IN sa_out;         // fill with router info
     char szbuffer[BUFFER_SIZE]; // buffer object
@@ -49,6 +49,9 @@ int main(void){
 
         // Server will block waiting for new client requests indefinitely
         while(1) {
+
+            server_num = client_num = 0;
+
 
             int selected = rand() % 256;
             int received, verify;
