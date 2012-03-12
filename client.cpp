@@ -101,8 +101,8 @@ int main(void){
             sendbuf(client_socket,sa_out,&client_num,szbuffer);
 
             // Perform a get request
-            if(!strcmp(direction,GET))      get(client_socket, sa_out, cusername, filename, server_num, client_num);
-            else if(!strcmp(direction,PUT)) put(client_socket, sa_out, cusername, filename, server_num, client_num);
+            if(!strcmp(direction,GET))      get(client_socket, sa_out, cusername, filename, client_num, server_num);
+            else if(!strcmp(direction,PUT)) put(client_socket, sa_out, cusername, filename, client_num, server_num);
 
         }else{
             throw "The method you requested does not exist, use get or put";
