@@ -24,6 +24,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     int selected = rand() % 256;
     int received, verify;
+    char type[4];
 
     // Receive a random number from the client
     recvbuf(server_socket,sa_out,&client_num,szbuffer);
