@@ -70,6 +70,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
         tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
+        bool mismatch = false;            // Checks if there is a packet mismatch
 
         FD_ZERO(&readfds);
         FD_SET(sock,&readfds);
@@ -87,15 +88,20 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }else{
                     cout << "Packet mismatch, discarding packet details" << endl;
                     sprintf(control_buffer,"%d %s",(int)!*packet_num,OK);
+                    mismatch = true;
                 }
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                     throw "Send failed"; 
                 }else{
                     cout << "Sent ack successfully" << endl;
-                    if(*packet_num)  *packet_num = 0;
-                    else             *packet_num = 1;
-                    return ibytesrecv;  // Return the amount of data received
+                    if(!mismatch){
+                        if(*packet_num)  *packet_num = 0;
+                        else             *packet_num = 1;
+                        return ibytesrecv;  // Return the amount of data received
+                    }else{
+                        return recvbuf(sock,sa,packet_num,buffer,buffer_size);
+                    }
                 }
             }
         }else{
