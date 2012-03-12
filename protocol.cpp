@@ -93,9 +93,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 packetc = buffer[BUFFER_SIZE-1];
                 packeti = atoi(&packetc);
 
-                if(packeti == *packet_num){
-                    packid = packetc;
-                }else{
+                if(packeti != *packet_num){
                     cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
                     mismatch = true;
                 }
