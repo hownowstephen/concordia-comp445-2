@@ -63,7 +63,7 @@ SOCKADDR_IN prepare_peer_connection(char* hostname, int port){
     return sa;
 }
 
-int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buffer_size=BUFFER_SIZE){
+int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buffer_size=BUFFER_SIZE, bool allow_timeout=false){
     try{
         int ibytesrecv = 0;               // Number of bytes received
         int ibytessent = 0;               // Number of bytes sent
@@ -119,11 +119,12 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
         }
     }catch(const char* str){
         cout << str << " attempting recvbuf again... ERROR:" << WSAGetLastError() << endl;
+        if(allow_timeout) return -1;
         return recvbuf(sock,sa,packet_num,buffer,buffer_size);
     }
 }
 
-int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffer_size=BUFFER_SIZE){
+int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffer_size=BUFFER_SIZE, bool allow_timeout=false){
     try{
         int ibytesrecv = 0;               // Number of bytes received
         int ibytessent = 0;               // Number of bytes sent
@@ -172,6 +173,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         }
     }catch(const char* str){
         cout << str << " attempting sendbuf again... ERROR:" << WSAGetLastError() << endl;
+        if(allow_timeout) return -1;
         return sendbuf(sock,sa,packet_num,buffer,buffer_size);
     }
 }

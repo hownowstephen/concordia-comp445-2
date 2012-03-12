@@ -64,22 +64,25 @@ int main(void){
             int client_num = 0; // Client packet number
             int server_num = 0; // Server packet number
 
-            // Send acknowledgement to the client along with our random number
-            sprintf(szbuffer,"RAND %d",selected);
-            cout << "Sending " << szbuffer << endl;
-            sendbuf(client_socket, sa_out, &client_num, szbuffer);
+            while(1){
+                // Send acknowledgement to the client along with our random number
+                sprintf(szbuffer,"RAND %d",selected);
+                cout << "Sending " << szbuffer << endl;
+                if(sendbuf(client_socket, sa_out, &client_num, szbuffer,true) < 0) continue;
 
-            // Finally wait for a response from the client with the number
-            recvbuf(client_socket,sa_out,&server_num,szbuffer);
-            cout << "Received " << szbuffer << endl;
-            sscanf(szbuffer,"RAND %d %d",&verify,&received);
+                // Finally wait for a response from the client with the number
+                if(recvbuf(client_socket,sa_out,&server_num,szbuffer,true) < 0) continue;
+                cout << "Received " << szbuffer << endl;
+                sscanf(szbuffer,"RAND %d %d",&verify,&received);
 
-            if(verify != selected)  throw "An unexpected error occurred in the initial handshake";
+                if(verify != selected)  throw "An unexpected error occurred in the initial handshake";
 
-            // Send acknowledgement to the client along with our random number
-            sprintf(szbuffer,"RAND %d",received);
-            cout << "Sending " << szbuffer << endl;
-            sendbuf(client_socket, sa_out, &client_num, szbuffer);
+                // Send acknowledgement to the client along with our random number
+                sprintf(szbuffer,"RAND %d",received);
+                cout << "Sending " << szbuffer << endl;
+                if(sendbuf(client_socket, sa_out, &client_num, szbuffer,true) < 0) continue;
+                break;
+            }
 
             client_num = selected & 0x1;
             server_num = received % 0x1;
