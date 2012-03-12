@@ -28,7 +28,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
     int progress = 0;
 
     while(1){
-        client_num = 2;
+        client_num = 3;
         // Receive a random number from the client
 
         if(recvbuf(server_socket,sa_out,&client_num,szbuffer,BUFFER_SIZE, true) < 0){
