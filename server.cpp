@@ -60,7 +60,7 @@ int main(void){
             // Send acknowledgement to the client along with our random number
             sprintf(szbuffer,"RAND %d %d",received,selected);
             cout << "Sending " << szbuffer << endl;
-            sendbuf(server_socket, sa_out, &client_num, szbuffer);
+            sendbuf(server_socket, sa_out, &server_num, szbuffer);
 
             // Finally wait for a response from the client with the number
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
