@@ -242,7 +242,7 @@ void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int lo
  }
 
 
-void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int local_packet, peer_packet){
+void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int local_packet, int peer_packet){
 
     SOCKADDR_IN sa = *sa_ptr;
 
