@@ -42,6 +42,8 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
         break;
     }
 
+    client_num = 1;
+
     while(1){
         // Finally wait for a response from the client with the number
         if(recvbuf(server_socket,sa_out,&client_num,szbuffer,BUFFER_SIZE,true) < 0) continue;
