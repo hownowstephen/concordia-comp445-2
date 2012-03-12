@@ -134,6 +134,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
         int verify;                       // Verify the received packet id
+        char verify_ack[2];               // Verify the ack response
 
         cout << "Sending packet " << *packet_num << endl;
 
@@ -152,9 +153,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
-                    sscanf(control_buffer,"%d OK",&verify);
-                    cout << "Verification value: " << verify << endl;
-                    if(*packet_num == verify){
+                    sscanf(control_buffer,"%d%s",&verify,verify_ack);
+                    if(*packet_num == verify && verify_ack == OK){
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                         if(*packet_num)  *packet_num = 0;
                         else             *packet_num = 1;
