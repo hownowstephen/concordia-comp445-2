@@ -54,14 +54,17 @@ int main(void){
 
             // Receive a random number from the client
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
+            cout << "Received " << szbuffer << endl;
             sscanf(szbuffer,"RAND %d",received);
 
             // Send acknowledgement to the client along with our random number
             sprintf(szbuffer,"RAND %d %d",received,selected);
+            cout << "Sending " << szbuffer << endl;
             sendbuf(server_socket, sa_out, &client_num, szbuffer);
 
             // Finally wait for a response from the client with the number
             recvbuf(server_socket,sa_out,&client_num,szbuffer);
+            cout << "Received " << szbuffer << endl;
             sscanf(szbuffer,"RAND %d",verify);
 
             if(selected != verify){
@@ -77,6 +80,8 @@ int main(void){
 
             client_num = received & 0x1;
             server_num = selected & 0x1;
+
+            cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
 
             // Extract data from the headers
             char cusername[128], filename[128], direction[3];
