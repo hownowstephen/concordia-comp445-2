@@ -92,7 +92,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 packeti = atoi(&packetc);
 
                 if(packeti == *packet_num){
-                    sprintf(control_buffer,"%d %s",packet,OK);
+                    sprintf(control_buffer,"%d %s",packeti,OK);
                 }else{
                     cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
                     sprintf(control_buffer,"%d %s",(int)!*packet_num,OK);
