@@ -15,7 +15,7 @@ RM = rm -f
 all: clean refresh update
 
 clean:
-	${RM} $(OBJ) $(BINSRV) $(BINCLI) $(BINRT)
+	${RM} $(OBJ) $(BINSRV) $(BINCLI)
 
 refresh:
 	git pull origin master
