@@ -73,7 +73,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     // Respond to the client request
     if(!strcmp(direction,GET))      put(server_socket, sa_out, PUT, filename, client_num);
-    else if(!strcmp(direction,PUT)) get(server_socket, sa_out, GET, filename, server_num);
+    else if(!strcmp(direction,PUT)) get(server_socket, sa_out, GET, filename, client_num);
     else                            throw "Requested protocol does not exist";
 }
 
