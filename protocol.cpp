@@ -97,7 +97,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                     sprintf(control_buffer,"%d",packeti);
                 }else{
                     cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
-                    sprintf(control_buffer,"%d",(int)!*packet_num);
+                    sprintf(control_buffer,"%d",!packeti);
                     mismatch = true;
                 }
                 cout << "Sending acknowledgment message " << control_buffer << endl;
@@ -108,7 +108,6 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                     if(!mismatch){
                         if(*packet_num == 1) *packet_num = 0;
                         else                 *packet_num = 1;
-                        cout << "FLOPPED PACKET TO " << *packet_num << endl;
                         return ibytesrecv;  // Return the amount of data received
                     }else{
                         throw "Mismatch";
@@ -161,7 +160,6 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                         if(*packet_num == 1) *packet_num = 0;
                         else                 *packet_num = 1;
-                        cout << "FLOPPED PACKET TO " << *packet_num << endl;
                         memset(buffer,0,buffer_size);
                         return ibytessent;
                     }else if(verify > 1 || verify < 0){
