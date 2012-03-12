@@ -55,7 +55,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
     }
 
     client_num = received & 0x1;
-    server_num = selected % 0x1;
+    server_num = selected & 0x1;
 
     cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
 

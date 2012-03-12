@@ -92,7 +92,7 @@ int main(void){
             }
 
             client_num = selected & 0x1;
-            server_num = received % 0x1;
+            server_num = received & 0x1;
 
             cout << "Starting with server packet " << server_num << " and client packet " << client_num << endl;
 
