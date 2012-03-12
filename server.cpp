@@ -18,6 +18,7 @@ using namespace std;
 
 int main(void){
     /* Main function, performs the listening loop for client connections */
+    srand ( time(NULL) );
 
     int server_num = 0;         // Server packet identifier
     int client_num = 0;         // Client packet identifier

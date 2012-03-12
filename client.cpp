@@ -15,6 +15,7 @@ using namespace std;
 #include "protocol.cpp"
 
 int main(void){
+    srand ( time(NULL) );
 
     int client_num = 0; // Client packet number
     int server_num = 0; // Server packet number
