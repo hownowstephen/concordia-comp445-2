@@ -118,7 +118,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
             return recvbuf(sock, sa, packet_num, buffer, buffer_size);
         }
     }catch(const char* str){
-        cout << str << " attempting recvbuf again... (" << WSAGetLastError() << ")" << endl;
+        cout << str << " attempting recvbuf again... ERROR:" << WSAGetLastError() << endl;
         return recvbuf(sock,sa,packet_num,buffer,buffer_size);
     }
 }
@@ -158,6 +158,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     // TODO: Verify the sequence number of this request
                     cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                     sscanf(control_buffer,"%d OK",&verify);
+                    cout << "Verification value: " << verify << endl;
                     if(*packet_num == verify){
                         if(*packet_num)  *packet_num = 0;
                         else             *packet_num = 1;
@@ -171,7 +172,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
             }
         }
     }catch(const char* str){
-        cout << str << " attempting sendbuf again... (" << WSAGetLastError() << ")" << endl;
+        cout << str << " attempting sendbuf again... ERROR:" << WSAGetLastError() << endl;
         return sendbuf(sock,sa,packet_num,buffer,buffer_size);
     }
 }
