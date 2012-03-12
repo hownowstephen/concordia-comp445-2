@@ -58,7 +58,7 @@ int main(void){
             // Print out the information
             cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
 
-            packet_num = 0;
+            packet_num = 1;
 
             // Respond to the client request
             if(!strcmp(direction,GET))      put(server_socket, &sa_out, PUT, filename, packet_num);
