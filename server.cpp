@@ -49,7 +49,7 @@ int main(void){
         while(1) {
 
             // Receive header data from the client
-            recvbuf(server_socket,sa_out,0,szbuffer);
+            recvbuf(server_socket,sa_out,&packet_num,szbuffer);
 
             // Extract data from the headers
             char cusername[128], filename[128], direction[3];
@@ -57,6 +57,8 @@ int main(void){
 
             // Print out the information
             cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
+
+            packet_num = 0;
 
             // Respond to the client request
             if(!strcmp(direction,GET))      put(server_socket, &sa_out, PUT, filename, packet_num);

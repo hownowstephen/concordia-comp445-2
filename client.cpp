@@ -61,7 +61,9 @@ int main(void){
 
             // Send client headers
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
-            sendbuf(client_socket,sa_out,0,szbuffer);
+            sendbuf(client_socket,sa_out,&packet_num,szbuffer);
+
+            packet_num = 0;
 
             // Perform a get request
             if(!strcmp(direction,GET)) get(client_socket, &sa_out, cusername, filename, packet_num);
