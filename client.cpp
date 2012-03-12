@@ -68,7 +68,7 @@ int main(void){
 
             while(1){
 
-                client_num = 2;
+                client_num = 3;
                 // Send acknowledgement to the client along with our random number
                 sprintf(szbuffer,"RAND %d",selected);
                 cout << "Sending " << szbuffer << endl;
@@ -76,7 +76,7 @@ int main(void){
                 if(progress < 1) continue;
                 }else progress = 1;
 
-                server_num = 2;
+                server_num = 1;
                 // Finally wait for a response from the client with the number
                 if(recvbuf(client_socket,sa_out,&server_num,szbuffer,BUFFER_SIZE,true) < 0){
                 if(progress < 2) continue;
@@ -84,7 +84,7 @@ int main(void){
                 cout << "Received " << szbuffer << endl;
                 sscanf(szbuffer,"RAND %d %d",&verify,&received);
 
-                client_num = 3;
+                client_num = 2;
                 // Send acknowledgement to the client along with our random number
                 sprintf(szbuffer,"RAND %d",received);
                 cout << "Sending " << szbuffer << endl;

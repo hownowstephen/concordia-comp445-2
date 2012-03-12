@@ -37,7 +37,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
         cout << "Received " << szbuffer << endl;
         sscanf(szbuffer,"RAND %d",&received);
 
-        server_num = 2;
+        server_num = 1;
         // Send acknowledgement to the client along with our random number
         sprintf(szbuffer,"RAND %d %d",received,selected);
         cout << "Sending " << szbuffer << endl;
@@ -45,7 +45,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
         if(progress < 2) continue;
         }else    progress = 2;
 
-        client_num = 3;
+        client_num = 2;
         // Finally wait for a response from the client with the number
         if(recvbuf(server_socket,sa_out,&client_num,szbuffer,BUFFER_SIZE,true) < 0){
         if(progress < 3) continue;
