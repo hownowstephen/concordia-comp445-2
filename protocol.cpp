@@ -301,7 +301,7 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int packet_n
 
             // Do cleanup
 
-            while(true){}
+            while(true){
                 memset(szbuffer,0,sizeof(szbuffer));
                 sprintf(szbuffer,"%s",OK);
                 if(sendbuf(s,sa,&packet_num,szbuffer,BUFFER_SIZE,true) < 0){
