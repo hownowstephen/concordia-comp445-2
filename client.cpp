@@ -109,11 +109,11 @@ int main(void){
 
             // Perform a get request
             if(!strcmp(direction,GET)){
-                TRACE_PREFIX = RECV;
+                trace_prefix = RECV;
                 get(client_socket, sa_out, cusername, filename, client_num);
                 
             }else if(!strcmp(direction,PUT)){
-                TRACE_PREFIX = SEND;
+                trace_prefix = SEND;
                 put(client_socket, sa_out, cusername, filename, client_num);
             }
 
