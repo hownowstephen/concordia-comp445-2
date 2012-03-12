@@ -41,6 +41,8 @@ void ftrace(char* message){
     if(TRACE){
         fprintf(logfile,"%s: %s\n",trace_prefix,message);
         memset(message,0,sizeof(message));
+    }else{
+        cout << "TRACE: " << message << endl;
     }
 }
 
