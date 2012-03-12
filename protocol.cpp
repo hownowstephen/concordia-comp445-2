@@ -82,13 +82,15 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 throw "Recv failed";
             }else{
                 memset(control_buffer,0,sizeof(control_buffer));
-                sprintf(control_buffer,"%d %s",*packet_num,OK);
+                sprintf(control_buffer,"%d %s",buffer[BUFFER_SIZE-1],OK);
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                     throw "Send failed"; 
                 }else{
                     // TODO: Figure out what to do after the send on the recvbuf side
                     cout << "Sent ack successfully" << endl;
+                    if(packet_num)  packet_num = 0;
+                    else            packet_num = 1;
                     return ibytesrecv;  // Return the amount of data received
                 }
             }
@@ -113,7 +115,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
 
-        if ((ibytessent = sendto(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
+        if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
             throw "Send failed"; 
         }else{
 
@@ -131,6 +133,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     // TODO: Verify the sequence number of this request
                     cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
                     memset(buffer,0,buffer_size);
+                    if(packet_num)  packet_num = 0;
+                    else            packet_num = 1;
                     return ibytessent; 
                 }
             }else{
@@ -189,8 +193,8 @@ void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int st
             int size = 0, count = 0;
             // Read data from the server until we have received the file
             while(count < filesize){
-                if(filesize - count >= BUFFER_SIZE) size = sizeof(szbuffer) / sizeof(char); // Read a full buffer
-                else                                size = (filesize - count) / sizeof(char);  // Read a shorter buffer
+                if(filesize - count >= BUFFER_SIZE) size = (sizeof(szbuffer) / sizeof(char)) - sizeof(char); // Read a full buffer
+                else                                size = ((filesize - count) / sizeof(char)) - sizeof(char);  // Read a shorter buffer
                 recvbuf(s,sa,&packet_num,szbuffer);
                 fwrite(szbuffer,sizeof(char),size,recv_file);
                 count += sizeof(szbuffer);
@@ -257,7 +261,8 @@ void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int sta
             int size = 0, sent = 0;
             // Loop through the file and stream in chunks based on the buffer size
             while ( !feof(send_file) ){
-                fread(szbuffer,1,BUFFER_SIZE,send_file);
+                fread(szbuffer,1,BUFFER_SIZE-1,send_file);
+                szbuffer[BUFFER_SIZE-1] = (char)*packet_num;    // Append the packet identifier
                 cout << "Sending " << sizeof(szbuffer) << " bytes" << endl;
                 sendbuf(s,sa,&packet_num,szbuffer);
             }

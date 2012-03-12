@@ -64,9 +64,9 @@ int main(void){
             sendbuf(client_socket,sa_out,&packet_num,szbuffer);
 
             // Perform a get request
-            if(!strcmp(direction,GET)) get(client_socket, &sa_out, cusername, filename, 0);
+            if(!strcmp(direction,GET)) get(client_socket, &sa_out, cusername, filename, packet_num);
             // Perform a put request
-            else if(!strcmp(direction,PUT)) put(client_socket, &sa_out, cusername, filename, 0);
+            else if(!strcmp(direction,PUT)) put(client_socket, &sa_out, cusername, filename, packet_num);
 
         }else{
             throw "this protocol only supports get or put";

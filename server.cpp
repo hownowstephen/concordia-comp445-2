@@ -19,7 +19,7 @@ using namespace std;
 int main(void){
     /* Main function, performs the listening loop for client connections */
 
-    int packet_num = 1;         // Server negotiates with packet zero from the outset
+    int packet_num = 0;         // Server negotiates with packet zero from the outset
     SOCKET server_socket;       // Global listening socket
     SOCKADDR_IN sa_out;         // fill with router info
     char szbuffer[BUFFER_SIZE]; // buffer object
@@ -59,8 +59,8 @@ int main(void){
             cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
 
             // Respond to the client request
-            if(!strcmp(direction,GET))      put(server_socket, &sa_out, PUT, filename, 0);
-            else if(!strcmp(direction,PUT)) get(server_socket, &sa_out, GET, filename, 0);
+            if(!strcmp(direction,GET))      put(server_socket, &sa_out, PUT, filename, packet_num);
+            else if(!strcmp(direction,PUT)) get(server_socket, &sa_out, GET, filename, packet_num);
             else                            throw "Requested protocol does not exist";
 
         }
