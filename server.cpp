@@ -16,9 +16,7 @@ using namespace std;
 
 #include "protocol.cpp"
 
-FILE* tracefile = fopen("server.log","wb");
-
-void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
+void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out, FILE* tracefile){
 
     char szbuffer[BUFFER_SIZE]; // buffer object
     int server_num = 0;         // client packet tracer
@@ -84,6 +82,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 }
 
 int main(void){
+    FILE* tracefile = fopen("server.log","w");
     set_trace(tracefile,"Server");
     /* Main function, performs the listening loop for client connections */
     srand ( time(NULL) );
@@ -115,14 +114,13 @@ int main(void){
         // Server will block waiting for new client requests indefinitely
         while(1){
             set_trace(tracefile,"Server");
-            handle_client(server_socket, sa_out);
+            handle_client(server_socket, sa_out,tracefile);
         }
 
     // Catch and print any errors
     } catch(const char * str){
         cerr << str << WSAGetLastError() << endl;
     }
-
     //close server socket and clean up the winsock
     closesocket(server_socket);
     WSACleanup();

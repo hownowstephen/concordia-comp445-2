@@ -14,7 +14,7 @@ using namespace std;
 
 #include "protocol.cpp"
 
-FILE* tracefile = fopen("client.log","wb");
+FILE* tracefile = fopen("client.log","w");
 
 int main(void){
     set_trace(tracefile,"Client");
