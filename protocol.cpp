@@ -191,7 +191,7 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_p
     try {
         cout << "Waiting for file headers" << endl;
         //wait for reception of server response.
-        recvbuf(s,sa,peer_packet,szbuffer); // Get the response from the server
+        recvbuf(s,sa,&peer_packet,szbuffer); // Get the response from the server
         sscanf(szbuffer,"%s %d",response,&filesize);    // Extract file data
 
         cout << "Response " << response << " filesize " << filesize << endl;
