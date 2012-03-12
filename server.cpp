@@ -20,6 +20,7 @@ FILE* tracefile = fopen("server.log","w");
 
 int main(void){
     /* Main function, performs the listening loop for client connections */
+    set_trace(tracefile,"Server");
     srand ( time(NULL) );
 
     SOCKET server_socket;       // Global listening socket
@@ -48,7 +49,6 @@ int main(void){
 
         // Server will block waiting for new client requests indefinitely
         while(1){
-            set_trace(tracefile,"Server");
 
             char szbuffer[BUFFER_SIZE]; // buffer object
             int server_num = 0;         // client packet tracer
