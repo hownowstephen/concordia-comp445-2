@@ -59,7 +59,7 @@ SOCKADDR_IN prepare_peer_connection(char* hostname, int port){
     return sa;
 }
 
-int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buffer_size=BUFFER_SIZE){
+int recvbuf(SOCKET sock, SOCKADDR_IN* sa, int* packet_num, char* buffer, int buffer_size=BUFFER_SIZE){
     try{
         int ibytesrecv = 0;               // Number of bytes received
         int ibytessent = 0;               // Number of bytes sent
@@ -82,7 +82,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
         }else if(result > 0){
             cout << "Receiving packet " << *packet_num << endl;
             memset(buffer,0,buffer_size); // Clear the buffer to prepare to receive data
-            if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
+            if((ibytesrecv = recvfrom(sock,buffer,buffer_size,0,(SOCKADDR*)sa, &from)) == SOCKET_ERROR){
                 throw "Recv failed";
             }else{
                 memset(control_buffer,0,sizeof(control_buffer));
@@ -98,7 +98,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                     mismatch = true;
                 }
                 cout << "Sending acknowledgment message " << control_buffer << endl;
-                if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
+                if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)sa, sizeof(sa))) == SOCKET_ERROR){ 
                     throw "Send failed"; 
                 }else{
                     cout << "Sent ack successfully" << endl;
@@ -120,7 +120,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
     }
 }
 
-int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffer_size=BUFFER_SIZE){
+int sendbuf(SOCKET sock, SOCKADDR_IN* sa, int* packet_num, char* buffer,int buffer_size=BUFFER_SIZE){
     try{
         int ibytesrecv = 0;               // Number of bytes received
         int ibytessent = 0;               // Number of bytes sent
@@ -134,7 +134,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
 
         cout << "Sending packet " << *packet_num << endl;
 
-        if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
+        if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)sa, sizeof(sa))) == SOCKET_ERROR){ 
             throw "Send failed"; 
         }else{
 
@@ -146,7 +146,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 throw "Timer error!";
             }else if(result > 0){
                 memset(control_buffer,0,sizeof(control_buffer));
-                if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
+                if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*&sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
                     // TODO: Verify the sequence number of this request
@@ -172,12 +172,10 @@ void prompt(const char* message, char*buffer){
     cin >> buffer;              // Record the input into the buffer
 }
 
-void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int local, int peer){
+void get(SOCKET s, SOCKADDR_IN* sa, char * username, char * filename, int local, int peer){
 
     int* local_packet = &local;
     int* peer_packet = &peer;
-
-    SOCKADDR_IN sa = *sa_ptr;
 
     char szbuffer[BUFFER_SIZE];
 
@@ -244,7 +242,7 @@ void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int lo
  }
 
 
-void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int local, int peer){
+void put(SOCKET s, SOCKADDR_IN* sa, char * username, char* filename, int local, int peer){
 
     int* local_packet = &local;
     int* peer_packet = &peer;
