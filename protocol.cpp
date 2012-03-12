@@ -29,9 +29,6 @@ using namespace std;
 #define TIMEOUT_USEC 300000 //time-out value
 #define TRACE 1
 
-FILE* LOGFILE;
-char* TRACE_PREFIX;
-
 void trace(char* message){
     if(TRACE){
         fprintf(LOGFILE,"%s: %s",TRACE_PREFIX,message);
