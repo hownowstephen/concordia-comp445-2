@@ -62,7 +62,7 @@ int main(void){
 
             // Send client headers
             sprintf(szbuffer,HEADER, cusername, direction, filename); 
-            sendbuf(client_socket,sa_out,&client_num,szbuffer);
+            sendbuf(client_socket,sa_out,0,szbuffer);
 
             // TODO: Replace with proper 3-way handshake
             client_num = 0;
@@ -73,7 +73,7 @@ int main(void){
             else if(!strcmp(direction,PUT)) put(client_socket, sa_out, cusername, filename, client_num, server_num);
 
         }else{
-            throw "this protocol only supports get or put";
+            throw "The method you requested does not exist, use get or put";
         }
 
     } // try loop
