@@ -139,7 +139,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         char* ident;
         itoa(*packet_num, ident,2); // Set the packet identifier
 
-        buffer[BUFFER_SIZE-1] = ident[len(ident)-1]; // Pass the packet identifier to the buffer
+        buffer[BUFFER_SIZE-1] = ident[strlen(ident)-1]; // Pass the packet identifier to the buffer
 
         if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
             throw "Send failed"; 
