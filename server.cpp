@@ -17,7 +17,7 @@ using namespace std;
 #include "protocol.cpp"
 
 FILE* logfile = fopen("server.log","wb");
-char* trace_prefix = "Server";
+trace_prefix = "Server";
 
 void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
