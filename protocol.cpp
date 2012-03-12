@@ -231,7 +231,18 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int packet_
 
             cout << "Finished receiving data" << endl;
 
-            recvbuf(s,sa,&packet_num,szbuffer);
+            // Do cleanup
+
+            while(true){
+                if(recvbuf(s,sa,&packet_num,szbuffer,BUFFER_SIZE,true) < 0){
+                    memset(szbuffer,0,sizeof(szbuffer));
+                    sprintf(szbuffer,"%s",OK);
+                    sendbuf(s,sa,&packet_num,szbuffer,BUFFER_SIZE,true);
+                }else{
+                    break;
+                }
+
+            }
 
             // Close our output file
             fclose(recv_file);
@@ -288,9 +299,17 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int packet_n
 
             fclose(send_file);
 
-            memset(szbuffer,0,sizeof(szbuffer));
-            sprintf(szbuffer,"%s",OK);
-            sendbuf(s,sa,&packet_num,szbuffer);
+            // Do cleanup
+
+            while(true){}
+                memset(szbuffer,0,sizeof(szbuffer));
+                sprintf(szbuffer,"%s",OK);
+                if(sendbuf(s,sa,&packet_num,szbuffer,BUFFER_SIZE,true) < 0){
+                    recvbuf(s,sa,&packet_num,szbuffer,BUFFER_SIZE,true);
+                }else{
+                    break;
+                }
+            }
 
             if(!strcmp(szbuffer,OK))    cout << "File transfer completed" << endl;
 
