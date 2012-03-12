@@ -136,12 +136,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
 
         cout << "Sending packet " << *packet_num << endl;
 
-        /*char* ident;
-        itoa(*packet_num, ident,2); // Set the packet identifier
-
-        buffer[BUFFER_SIZE-1] = ident[strlen(ident)-1]; // Pass the packet identifier to the buffer
-
-        cout << "Sending: " << buffer << endl;*/
+        if(*packet_num) buffer[BUFFER_SIZE-1] = '1';
 
         if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
             throw "Send failed"; 
