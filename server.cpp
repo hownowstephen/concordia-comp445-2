@@ -42,7 +42,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     if(selected != verify){
         cout << "Something went wrong in the initial handshake..." << endl;
-        continue;
+        return;
     }
 
     client_num = received & 0x1;
