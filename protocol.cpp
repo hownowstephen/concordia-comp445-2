@@ -138,6 +138,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         cout << "Sending packet " << *packet_num << endl;
 
         if(*packet_num) buffer[BUFFER_SIZE-1] = '1';
+        else            buffer[BUFFER_SIZE-1] = '0';
 
         if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR) throw "Send failed";
         else{
