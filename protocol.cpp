@@ -69,7 +69,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN* sa, int* packet_num, char* buffer, int buf
         tp->tv_sec=0;                     // Set current time
         tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
-        int from = sizeof(sa);            // Size of the sockaddr
+        int from = sizeof(*sa);            // Size of the sockaddr
         bool mismatch = false;            // Checks if there is a packet mismatch
         char packetc;                     // Holds the packet number in character format
         int packeti;                      // Holds the packet number in int format
@@ -130,7 +130,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN* sa, int* packet_num, char* buffer,int buff
         tp->tv_sec=0;                     // Set current time
         tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
-        int from = sizeof(sa);            // Size of the sockaddr
+        int from = sizeof(*sa);            // Size of the sockaddr
 
         cout << "Sending packet " << *packet_num << endl;
 
