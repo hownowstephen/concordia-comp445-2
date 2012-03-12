@@ -166,6 +166,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                         return ibytessent;
                     }else if(verify > 1 || verify < 0){
                         throw "Invalid verification data received";
+                    }else{
+                        cout << "Ignoring packet, got " << control_buffer << endl;
                     }
                 }
             }else{
