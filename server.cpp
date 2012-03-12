@@ -19,7 +19,8 @@ using namespace std;
 void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     char szbuffer[BUFFER_SIZE]; // buffer object
-    int server_num = client_num = 0;
+    int server_num = 0;         // client packet tracer
+    int client_num = 0;         // server packet tracer
 
     int selected = rand() % 256;
     int received, verify;
