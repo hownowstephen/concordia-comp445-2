@@ -115,12 +115,12 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }
             }
         }else{
-            return recvbuf(sock, sa, packet_num, buffer, buffer_size);
+            return recvbuf(sock, sa, packet_num, buffer, buffer_size,allow_timeout);
         }
     }catch(const char* str){
         if(allow_timeout) return -1;
         cout << str << " attempting recvbuf again... ERROR:" << WSAGetLastError() << endl;
-        return recvbuf(sock,sa,packet_num,buffer,buffer_size);
+        return recvbuf(sock,sa,packet_num,buffer,buffer_size, allow_timeout);
     }
 }
 
@@ -179,7 +179,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
     }catch(const char* str){
         if(allow_timeout) return -1;
         cout << str << " attempting sendbuf again... ERROR:" << WSAGetLastError() << endl;
-        return sendbuf(sock,sa,packet_num,buffer,buffer_size);
+        return sendbuf(sock,sa,packet_num,buffer,buffer_size,allow_timeout);
     }
 }
 
