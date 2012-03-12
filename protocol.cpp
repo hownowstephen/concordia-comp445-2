@@ -167,15 +167,17 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
     }
 }
 
-void prompt(char* message, char*buffer){
+void prompt(const char* message, char*buffer){
     cout << message << flush ;  // Print the message
     cin >> buffer;              // Record the input into the buffer
 }
 
 void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int local, int peer){
 
-    int* local_packet = local;
-    int* peer_packet = peer;
+    int* local_packet, peer_packet;
+
+    *local_packet = local;
+    *peer_packet = peer;
 
     SOCKADDR_IN sa = *sa_ptr;
 
@@ -246,8 +248,10 @@ void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int lo
 
 void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int local, int peer){
 
-    int* local_packet = local;
-    int* peer_packet = peer;
+    int* local_packet, peer_packet;
+
+    *local_packet = local;
+    *peer_packet = peer;
 
     SOCKADDR_IN sa = *sa_ptr;
 
@@ -292,7 +296,7 @@ void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int loc
             }
 
             fclose(send_file);
-            recvbuf(s,sa,&peer_packet,szbuffer); // Receive the ack from the client
+            recvbuf(s,sa,peer_packet,szbuffer); // Receive the ack from the client
 
             if(!strcmp(szbuffer,OK))    cout << "File transfer completed" << endl;
 
