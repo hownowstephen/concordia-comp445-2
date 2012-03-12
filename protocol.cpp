@@ -21,6 +21,7 @@ using namespace std;
 #define GET "get"           // Method name for GET requests
 #define PUT "put"           // Method name for PUT requests
 #define OK "OK"             // Expected response for successful transfers
+#define RAND "RAND"         // Indicates a random number being sent
 #define MISSING "NO"        // Expected response for failed transfers
 #define HEADER "%s\t%s\t%s" // Format string for headers
 #define TIMEOUT_USEC 300000 //time-out value

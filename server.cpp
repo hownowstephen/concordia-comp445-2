@@ -27,18 +27,18 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
 
     // Receive a random number from the client
     recvbuf(server_socket,sa_out,&client_num,szbuffer);
-    cout << "Received " << szbuffer << endl;
-    sscanf(szbuffer,"RAND %d",&received);
+    sscanf(szbuffer,"%s%d",type,&received);
+    cout << "Received " << type << " " << szbuffer << endl;
 
     // Send acknowledgement to the client along with our random number
-    sprintf(szbuffer,"RAND %d %d",received,selected);
+    sprintf(szbuffer,"%s%d%d",RAND,received,selected);
     cout << "Sending " << szbuffer << endl;
     sendbuf(server_socket, sa_out, &server_num, szbuffer);
 
     // Finally wait for a response from the client with the number
     recvbuf(server_socket,sa_out,&client_num,szbuffer);
-    cout << "Received " << szbuffer << endl;
-    sscanf(szbuffer,"RAND %d",&verify);
+    sscanf(szbuffer,"%s%d",type,&verify);
+    cout << "Received " << type << " " << szbuffer << endl;
 
     if(selected != verify){
         cout << "Something went wrong in the initial handshake..." << endl;

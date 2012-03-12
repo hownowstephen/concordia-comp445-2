@@ -17,9 +17,6 @@ using namespace std;
 int main(void){
     srand ( time(NULL) );
 
-    int client_num = 0; // Client packet number
-    int server_num = 0; // Server packet number
-
     //socket data types
     SOCKET client_socket;   // Client socket
     SOCKADDR_IN sa_out;      // fill with server info, IP, port
@@ -63,21 +60,25 @@ int main(void){
 
             int selected = rand() % 256;
             int received, verify;
+            char type[4];
+
+            int client_num = 0; // Client packet number
+            int server_num = 0; // Server packet number
 
             // Send acknowledgement to the client along with our random number
-            sprintf(szbuffer,"RAND %d",selected);
+            sprintf(szbuffer,"%s%d",RAND,selected);
             cout << "Sending " << szbuffer << endl;
             sendbuf(client_socket, sa_out, &client_num, szbuffer);
 
             // Finally wait for a response from the client with the number
             recvbuf(client_socket,sa_out,&server_num,szbuffer);
             cout << "Received " << szbuffer << endl;
-            sscanf(szbuffer,"RAND %d %d",&verify,&received);
+            sscanf(szbuffer,"%s%d%d",type,&verify,&received);
 
             if(verify != selected)  throw "An unexpected error occurred in the initial handshake";
 
             // Send acknowledgement to the client along with our random number
-            sprintf(szbuffer,"RAND %d",received);
+            sprintf(szbuffer,"%s%d",RAND,received);
             cout << "Sending " << szbuffer << endl;
             sendbuf(client_socket, sa_out, &client_num, szbuffer);
 
