@@ -213,13 +213,6 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_p
             // Open our local file for writing
             recv_file = fopen(filename,"wb");
 
-            // Send ack to start data transfer
-            memset(szbuffer,0,BUFFER_SIZE);
-            sprintf(szbuffer,"SEND");
-            sendbuf(s,sa,&local_packet,szbuffer); // Send an ACK
-
-            cout << "local packet num is now " << local_packet << endl;
-
             int size = 0, count = 0;
             // Read data from the server until we have received the file
             while(count < filesize){
@@ -236,11 +229,6 @@ void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int local_p
 
             // Close our output file
             fclose(recv_file);
-
-            // Clear the buffer and send an ack to the server to confirm receipt
-            memset(szbuffer,0,BUFFER_SIZE);
-            sprintf(szbuffer,"OK");
-            sendbuf(s,sa,&local_packet,szbuffer);    // Send confirmation of receipt
 
             cout << "Completed transfer of " << filename << endl;
         }else{
@@ -284,8 +272,6 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int local_pa
             sprintf(szbuffer,"%s %d",OK,filesize);
             sendbuf(s,sa,&local_packet,szbuffer);    // Send the filesize
             cout << "local packet num is now " << local_packet << endl;
-            recvbuf(s,sa,&peer_packet,szbuffer);    // Wait for ack from client
-            cout << "peer packet num is now " << peer_packet << endl;
 
             int size = 0, sent = 0;
             // Loop through the file and stream in chunks based on the buffer size
@@ -297,7 +283,6 @@ void put(SOCKET s, SOCKADDR_IN sa, char * username, char* filename, int local_pa
             }
 
             fclose(send_file);
-            recvbuf(s,sa,&peer_packet,szbuffer); // Receive the ack from the client
 
             if(!strcmp(szbuffer,OK))    cout << "File transfer completed" << endl;
 
