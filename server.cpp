@@ -16,6 +16,8 @@ using namespace std;
 
 #include "protocol.cpp"
 
+FILE* tracefile = fopen("server.log","w");
+
 int main(void){
     /* Main function, performs the listening loop for client connections */
     srand ( time(NULL) );
@@ -45,7 +47,6 @@ int main(void){
         sa_out = prepare_peer_connection(router, ROUTER_PORT1);
 
         // Server will block waiting for new client requests indefinitely
-        FILE* tracefile = fopen("server.log","w");
         while(1){
             set_trace(tracefile,"Server");
 
