@@ -99,7 +99,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                     cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
                     mismatch = true;
                 }
-                control_buffer[BUFFER_SIZE-1] = packid[0];
+                control_buffer[BUFFER_SIZE-1] = packetc;
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
                     throw "Send failed"; 
