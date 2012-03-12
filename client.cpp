@@ -71,7 +71,7 @@ int main(void){
             // Finally wait for a response from the client with the number
             recvbuf(client_socket,sa_out,&client_num,szbuffer);
             cout << "Received " << szbuffer << endl;
-            sscanf(szbuffer,"RAND %d %d",verify,received);
+            sscanf(szbuffer,"RAND %d %d",&verify,&received);
 
             if(verify != selected)  throw "An unexpected error occurred in the initial handshake";
 
