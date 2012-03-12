@@ -47,8 +47,8 @@ SOCKET open_port(int port){
     return sock;
 }
 
-SOCKADDR_IN prepare_peer_connection(char* hostname, int port){
-    SOCKADDR_IN sa;
+SOCKADDR_IN* prepare_peer_connection(char* hostname, int port){
+    SOCKADDR_IN* sa;
     HOSTENT *hp;
     if((hp=gethostbyname(hostname)) == NULL) throw "Could not determine a host address from supplied name";
 
@@ -56,7 +56,7 @@ SOCKADDR_IN prepare_peer_connection(char* hostname, int port){
     memcpy(&sa.sin_addr,hp->h_addr,hp->h_length);
     sa.sin_family = hp->h_addrtype;   
     sa.sin_port = htons(port);
-    return sa;
+    return &sa;
 }
 
 int recvbuf(SOCKET sock, SOCKADDR_IN* sa, int* packet_num, char* buffer, int buffer_size=BUFFER_SIZE){

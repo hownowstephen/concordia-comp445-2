@@ -21,7 +21,7 @@ int main(void){
 
     //socket data types
     SOCKET client_socket;   // Client socket
-    SOCKADDR_IN sa_out;      // fill with server info, IP, port
+    SOCKADDR_IN* sa_out;      // fill with server info, IP, port
 
     char szbuffer[BUFFER_SIZE]; // Buffer
 
@@ -70,8 +70,8 @@ int main(void){
             server_num = 0;
 
             // Perform a get request
-            if(!strcmp(direction,GET))      get(client_socket, &sa_out, cusername, filename, client_num, server_num);
-            else if(!strcmp(direction,PUT)) put(client_socket, &sa_out, cusername, filename, client_num, server_num);
+            if(!strcmp(direction,GET))      get(client_socket, sa_out, cusername, filename, client_num, server_num);
+            else if(!strcmp(direction,PUT)) put(client_socket, sa_out, cusername, filename, client_num, server_num);
 
         }else{
             throw "this protocol only supports get or put";
