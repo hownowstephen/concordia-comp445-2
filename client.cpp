@@ -65,11 +65,14 @@ int main(void){
             int server_num = 0; // Server packet number
 
             while(1){
+
+                client_num = 0;
                 // Send acknowledgement to the client along with our random number
                 sprintf(szbuffer,"RAND %d",selected);
                 cout << "Sending " << szbuffer << endl;
                 if(sendbuf(client_socket, sa_out, &client_num, szbuffer,BUFFER_SIZE,true) < 0) continue;
-                
+
+                server_num = 0;
                 // Finally wait for a response from the client with the number
                 if(recvbuf(client_socket,sa_out,&server_num,szbuffer,BUFFER_SIZE,true) < 0) continue;
                 cout << "Received " << szbuffer << endl;
@@ -78,9 +81,8 @@ int main(void){
                 break;
             }
 
-            client_num = 1;
-
             while(1){
+                client_num = 1;
                 // Send acknowledgement to the client along with our random number
                 sprintf(szbuffer,"RAND %d",received);
                 cout << "Sending " << szbuffer << endl;

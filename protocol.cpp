@@ -134,7 +134,6 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
         int verify;                       // Verify the received packet id
-        char verify_ack[2];               // Verify the ack response
 
         cout << "Sending packet " << *packet_num << endl;
 
