@@ -104,8 +104,10 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }else{
                     cout << "Sent ack successfully" << endl;
                     if(!mismatch){
-                        if(*packet_num) *packet_num = 0;
-                        else            *packet_num = 1;
+                        if(*packet_num == 1)        *packet_num = 0;
+                        else if(*packet_num == 2)   *packet_num = 3;
+                        else if(*packet_num == 3)   *packet_num = 2;
+                        else                        *packet_num = 1;
                         return ibytesrecv;  // Return the amount of data received
                     }else{
                         throw "Mismatch";
@@ -137,8 +139,10 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
 
         cout << "Sending packet " << *packet_num << endl;
 
-        if(*packet_num) buffer[BUFFER_SIZE-1] = '1';
-        else            buffer[BUFFER_SIZE-1] = '0';
+        if(*packet_num == 1)        buffer[BUFFER_SIZE-1] = '1';
+        else if(*packet_num == 2)   buffer[BUFFER_SIZE-1] = '2';
+        else if(*packet_num == 3)   buffer[BUFFER_SIZE-1] = '3';
+        else                        buffer[BUFFER_SIZE-1] = '0';
 
         if ((ibytessent = sendto(sock,buffer,BUFFER_SIZE,0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR) throw "Send failed";
         else{
@@ -155,8 +159,10 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     sscanf(control_buffer,"%d",&verify);
                     if(*packet_num == verify){
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
-                        if(*packet_num == 1) *packet_num = 0;
-                        else                 *packet_num = 1;
+                        if(*packet_num == 1)        *packet_num = 0;
+                        else if(*packet_num == 2)   *packet_num = 3;
+                        else if(*packet_num == 3)   *packet_num = 2;
+                        else                        *packet_num = 1;
                         memset(buffer,0,buffer_size);
                         return ibytessent;
                     }else if(verify > 1 || verify < 0){
