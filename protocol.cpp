@@ -32,6 +32,13 @@ using namespace std;
 FILE* LOGFILE;
 char* TRACE_PREFIX;
 
+void trace(char* message){
+    if(TRACE){
+        fprintf(LOGFILE,"%s: %s",TRACE_PREFIX,message);
+        memset(message,0,sizeof(message));
+    }
+}
+
 
 SOCKET open_port(int port){
     SOCKET sock;      // Define the socket to return
@@ -208,13 +215,6 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
 void prompt(const char* message, char*buffer){
     cout << message << flush ;  // Print the message
     cin >> buffer;              // Record the input into the buffer
-}
-
-void trace(char* message){
-    if(TRACE){
-        fprintf(LOGFILE,"%s: %s",TRACE_PREFIX,message);
-        memset(message,0,sizeof(message));
-    }
 }
 
 void get(SOCKET s, SOCKADDR_IN sa, char * username, char * filename, int packet_num){
