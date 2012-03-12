@@ -94,15 +94,11 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 packeti = atoi(&packetc);
 
                 if(packeti == *packet_num){
-                    sprintf(control_buffer,"%d %s",packeti,OK); 
-                    if(*packet_num) buffer[BUFFER_SIZE-1] = '1';
-                    else            buffer[BUFFER_SIZE-1] = '0';
+                    buffer[BUFFER_SIZE-1] = itoa(packeti);
                 }else{
                     cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
-                    sprintf(control_buffer,"%d %s",(int)!*packet_num,OK);
+                    buffer[BUFFER_SIZE-1] = itoa((int)!packeti);
                     mismatch = true;
-                    if(*packet_num) buffer[BUFFER_SIZE-1] = '0';
-                    else            buffer[BUFFER_SIZE-1] = '1';
                 }
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, from)) == SOCKET_ERROR){ 
@@ -171,8 +167,6 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                         return ibytessent;
                     }else if(verifyi > 1 || verifyi < 0){
                         throw "Invalid verification data received";
-                    }else{
-                        cout << "Ignoring packet, got " << control_buffer << " parse to " << verifyi << " and " << verify_ack << endl;
                     }
                 }
             }else{
