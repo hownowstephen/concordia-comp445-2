@@ -106,7 +106,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 }else{
                     cout << "Sent ack successfully" << endl;
                     if(!mismatch){
-                        *packet_num = !*packet_num;
+                        packet_num = !*packet_num;
                         return ibytesrecv;  // Return the amount of data received
                     }else{
                         throw "Mismatch";
@@ -157,7 +157,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                     sscanf(control_buffer,"%d%s",&verify,verify_ack);
                     if(*packet_num == verify && verify_ack == OK){
                         cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
-                        *packet_num = !*packet_num;
+                        packet_num  = !*packet_num;
                         memset(buffer,0,buffer_size);
                         return ibytessent;
                     }else if(verify > 1 || verify < 0){
