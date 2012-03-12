@@ -133,7 +133,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
-        int verify;                       // Verify the received packet id
+        int verify = 2;                   // Verify the received packet id
 
         cout << "Sending packet " << *packet_num << endl;
 
@@ -151,7 +151,6 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
                     throw "Ack recv failed";
                 }else{
-                    // TODO: Verify the sequence number of this request
                     sscanf(control_buffer,"%d OK",&verify);
                     cout << "Verification value: " << verify << endl;
                     if(*packet_num == verify){
@@ -160,6 +159,8 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                         else             *packet_num = 1;
                         memset(buffer,0,buffer_size);
                         return ibytessent;
+                    }else if(verify > 1){
+                        throw "Invalid verification data received";
                     }
                 }
             }else{
