@@ -49,7 +49,7 @@ int main(void){
         while(1) {
 
             // Receive header data from the client
-            recvbuf(server_socket,sa_out,*packet_num,szbuffer);
+            recvbuf(server_socket,sa_out,&packet_num,szbuffer);
 
             // Extract data from the headers
             char cusername[128], filename[128], direction[3];
