@@ -82,7 +82,7 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 throw "Recv failed";
             }else{
                 memset(control_buffer,0,sizeof(control_buffer));
-                sprintf(control_buffer,"%d %s",packet_num,OK);
+                sprintf(control_buffer,"%d %s",&packet_num,OK);
                 cout << "Sending acknowledgment message " << control_buffer << endl;
                 if ((ibytessent = sendto(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, sizeof(sa))) == SOCKET_ERROR){ 
                     throw "Send failed"; 
@@ -149,11 +149,11 @@ void prompt(char* message, char*buffer){
     cin >> buffer;              // Record the input into the buffer
 }
 
-void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename){
+void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename, int start_packet){
 
     SOCKADDR_IN sa = *sa_ptr;
 
-    int packet_num = 0;
+    int packet_num = start_packet;
 
     char szbuffer[BUFFER_SIZE];
 
@@ -218,10 +218,10 @@ void get(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char * filename){
  }
 
 
-void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename){
+void put(SOCKET s, SOCKADDR_IN* sa_ptr, char * username, char* filename, int start_packet){
 
     SOCKADDR_IN sa = *sa_ptr;
-    int packet_num = 0;
+    int packet_num = start_packet;
 
     char szbuffer[BUFFER_SIZE];
 

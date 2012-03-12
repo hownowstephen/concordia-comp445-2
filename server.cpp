@@ -59,8 +59,8 @@ int main(void){
             cout << "Client " << cusername << " requesting to " << direction << " file " << filename << endl;
 
             // Respond to the client request
-            if(!strcmp(direction,GET))      put(server_socket,&sa_out,PUT,filename);
-            else if(!strcmp(direction,PUT)) get(server_socket,&sa_out,GET,filename);
+            if(!strcmp(direction,GET))      put(server_socket, &sa_out, PUT, filename, 0);
+            else if(!strcmp(direction,PUT)) get(server_socket, &sa_out, GET, filename, 0);
             else                            throw "Requested protocol does not exist";
 
         }
