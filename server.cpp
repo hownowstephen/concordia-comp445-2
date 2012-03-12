@@ -35,6 +35,7 @@ void handle_client(SOCKET server_socket, SOCKADDR_IN sa_out){
     cout << "Sending " << szbuffer << endl;
     sendbuf(server_socket, sa_out, &server_num, szbuffer);
 
+    client_num = 1;
     // Finally wait for a response from the client with the number
     recvbuf(server_socket,sa_out,&client_num,szbuffer);
     cout << "Received " << szbuffer << endl;
