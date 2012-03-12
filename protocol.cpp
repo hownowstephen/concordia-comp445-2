@@ -71,6 +71,8 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
         bool mismatch = false;            // Checks if there is a packet mismatch
+        char packetc;                     // Holds the packet number in character format
+        int packeti;                      // Holds the packet number in int format
 
         FD_ZERO(&readfds);
         FD_SET(sock,&readfds);
@@ -85,10 +87,14 @@ int recvbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer, int buff
                 throw "Recv failed";
             }else{
                 memset(control_buffer,0,sizeof(control_buffer));
-                if(((int)buffer[BUFFER_SIZE-1] == *packet_num)){
-                    sprintf(control_buffer,"%d %s",buffer[BUFFER_SIZE-1],OK);
+
+                packetc = buffer[BUFFER_SIZE-1];
+                packeti = atoi(&packetc);
+
+                if(packeti == *packet_num)){
+                    sprintf(control_buffer,"%d %s",packet,OK);
                 }else{
-                    cout << "Packet mismatch, received packet " << (int)buffer[BUFFER_SIZE-1] << ", discarding" << endl;
+                    cout << "Packet mismatch, received packet " << packeti << ", discarding" << endl;
                     sprintf(control_buffer,"%d %s",(int)!*packet_num,OK);
                     mismatch = true;
                 }
