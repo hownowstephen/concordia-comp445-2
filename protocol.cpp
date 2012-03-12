@@ -134,6 +134,7 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
         tp->tv_usec=TIMEOUT_USEC;         // Set timeout time
         char control_buffer[BUFFER_SIZE]; // Control flow buffer, used to store the ACK result
         int from = sizeof(sa);            // Size of the sockaddr
+        int verify;                       // Verify the received packet id
 
         cout << "Sending packet " << *packet_num << endl;
 
@@ -156,14 +157,34 @@ int sendbuf(SOCKET sock, SOCKADDR_IN sa, int* packet_num, char* buffer,int buffe
                 }else{
                     // TODO: Verify the sequence number of this request
                     cout << "Finished negotiating a packet, acknowledgment " << control_buffer << " received" << endl;
-                    memset(buffer,0,buffer_size);
-                    if(*packet_num)  *packet_num = 0;
-                    else             *packet_num = 1;
-                    return ibytessent; 
+                    sscanf(control_buffer,"%d OK",&verify);
+
+                    if(*packet_num == verify){
+                        if(*packet_num)  *packet_num = 0;
+                        else             *packet_num = 1;
+                        memset(buffer,0,buffer_size);
+                        return ibytessent; 
+                    }else{
+                        cout << "Received ack for wrong packet, ignoring" << endl;
+                        memset(control_buffer,0,buffer_size);
+                        if((ibytesrecv = recvfrom(sock,control_buffer,sizeof(control_buffer),0,(SOCKADDR*)&sa, &from)) == SOCKET_ERROR){
+                            throw "Ack recv failed";
+                        }else{
+                            sscanf(control_buffer,"%d OK",&verify);
+                            if(*packet_num == verify){
+                                if(*packet_num)  *packet_num = 0;
+                                else             *packet_num = 1;
+                                memset(buffer,0,buffer_size);
+                                return ibytessent; 
+                            }else{
+                                throw "No ack outstanding";
+                            }
+                        }
+                    }
                 }
             }else{
                 // Otherwise re-initiate the process
-                throw "Unacked!";
+                throw "No ack received";
             }
         }
     }catch(const char* str){
