@@ -1,29 +1,42 @@
-# Assignment 2 Comp 445
+Assignment Solution
+================================
 
-Author: Stephen Young, st_youn at encs.concordia.ca
-Student ID: 9736247
 
-The application is a routed FTP client/server application over UDP/winsock
+<table>
+  <tr>
+    <td><strong>University</strong></td><td><a href="http://www.concordia.ca/">Concordia University</a></td>
+  </tr>
+  <tr>
+    <td><strong>Class</strong></td><td>COMP 445 (Data Communication and Computer Networks)</td>
+  </tr>
+  <tr>
+    <td><strong>Semester</strong></td><td>Winter 2012</td>
+  </tr>
+  <tr>
+    <td><strong>Assignment</strong></td><td>Assignment 2</td>
+  </tr>
+</table>
 
-Included are the following files:
 
-* client.cpp - The FTP client
-* server.cpp - The FTP server
-* protocol.cpp - A custom file transfer protocol library
-* Makefile - The makefile, optimized for MinGW/GNU
+About
+--------------
 
-as well as the necessary router.h, router.cpp - Packet-dropping router application
+We don’t think learning stops when an assignment is submitted. This is meant as an intellectual effort to find the “perfect” solution to assignments. We're students who love writing beautiful code and the intellectual challenge of refactoring.
 
-The application was made to be built using MinGW on windows, and was built and
-developed under Cygwin. It should work as well with Visual Studio, but is best
-compiled using the GCC c++ compiler (g++) and GNU Make
+Assignment solutions are only pushed to Github after their submission deadline. Pull requests always accepted.
 
-Basic build: make clean && make all
-Server application: ./server.exe
-Client application: ./client.exe
+If it wasn't obvious, this is not an official effort from any university.
 
-The server assumes the following:
+Want to be part of this movement?
+--------------
 
-* Buffer size of 2048 bytes
-* Hostname does not exceed 11 characters
-* Filename and Username must be <= 128 characters
+Copy this Readme and follow these naming conventions for your repo:
+
+    (university)-(course number)-(assignment number)
+
+Keep everything lowercase (eg. `concordia-comp445-2`). Include source files of your solution and a PDF of the original assignment description.
+
+License
+--------------
+
+All material in this repository is released in the public domain, except for the assignment description which retains its original license.
